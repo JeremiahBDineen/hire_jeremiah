@@ -56,19 +56,19 @@
 </ul></nav></header>
 <main class="page-content">
   <h1>Median Income</h1>
-  <section><p>[Text Box 1 Placeholder]</p></section>
+  <section><p>In the following blog post we explore the distribution of median income across US counties in 2023.  This data is sourced from the American Community Survey S1901 tables which can be obtained via https://data.census.gov/table/ACSST5Y2023.S1901?q=income&g=010XX00US$0500000.  </p></section>
   <section><img src="output/plots/median_income_1.png" alt="Median Income Plot 1" /></section>
-  <section><p>[Text Box 2 Placeholder]</p></section>
+  <section><p>The plot above expresses the median income per county across the US.  Perhaps obviously, it appears rural regions with low population tend to have much lower income while urban centers (and the area immediately surrounding them) have quite high median income.  The northeastern corridor has deep blue to purple indicating median incomes between 200K to 100K.  The Midwest has several small purple/blue zones, yet most counties within a wide radius of the cities still have fairly reddish hue indicating 60K to 80K.  The west coast has large cities with expectedly high median income and the surrounding counties still remain consistently higher than about 60K (often close to 100K). </p></section>
   <section><img src="output/plots/median_income_2.png" alt="Median Income Plot 2" /></section>
-  <section><p>[Text Box 3 Placeholder]</p></section>
+  <section><p>This plot looks at the relationship between cumulative median income across counties.  If a few dominant counties had much higher income than the remaining counties, we would observe a steep initial curve, which moderates to a horizontal line the further right you traverse.  The top 50% percent of counties hold about 60% of cumulative median income.  If all counties had equal median income then we would expect to see a 45 degree line, meaning 10% of counties contribute to 10% of cumulative median income, 70% of counties contribute to 70% of income and so on.  The actual curve here is quite close to a 45 degree line with median income not drastically changing across counties.</p></section>
   <section><img src="output/plots/median_income_3.png" alt="Median Income Plot 3" /></section>
-  <section><p>[Text Box 4 Placeholder]</p></section>
+  <section><p>This plot is the same as the previous, but given our new knowledge on the distribution of median income across counties, we can partition to the median income variable into 5 levels: greater than 125K, greater than 100K, greater than 75K, greater than 50K and less than 50K.  Note purple and especially blue are just a few counties (under 5%).  Red is several times larger than the first two colors with about 16% of total observations.  The orange category of 50K to 75K is the largest by far with nearly 60%.  Finally, the yellow category of less than 50K has about 15%. </p></section>
   <section><img src="output/plots/median_income_4.png" alt="Median Income Plot 4" /></section>
-  <section><p>[Text Box 5 Placeholder]</p></section>
+  <section><p>We can now take a more digestible view of the median income distribution across the US with our new factor variable median income group.  One way to conceptualize this graph is to imagine median income dollars to be a height above sea level.  Consider the orange counties to be our baseline ‘sea level’ of 50K to 75K.  The orange category is the majority with some yellow counties creating ‘valleys’ below sea level like in appalachia, the deep south and New Mexico.  Red could correspond to ‘hills’ that reach from 75K to 100K.  Purple can be ‘mountains’ with blue as the nation’s highest peaks.  This is just one conceptual strategy to interpret this geospatial data.  </p></section>
   <section><img src="output/plots/median_income_5.png" alt="Median Income Plot 5" /></section>
-  <section><p>[Text Box 6 Placeholder]</p></section>
+  <section><p>This density plot transparently expresses the distribution of median income per county in the US.  The mean and median of the distribution are likely to be close to the peak at about 62K.  The bell curve shape is known as a ‘normal’ distribution in statistics where most values fall close to the center with fewer and fewer values existing farther away as you approach the tails on either side.  The middle 50% of observations exist between 54K to 73K and the middle 80% of exist between 45K to 86K.  </p></section>
   <section><img src="output/plots/median_income_6.png" alt="Median Income Plot 6" /></section>
-  <section><p>[Text Box 7 Placeholder]</p></section>
+  <section><p>This plot is the same as the previous, yet is supplemented with the median income group partitioning.  Something to perhaps explore further is the bump in the yellow region around 22K.  </p></section>
 </main>
 </body>
 </html>
