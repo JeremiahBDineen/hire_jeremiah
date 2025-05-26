@@ -71,56 +71,50 @@
     </div>
   </section>
   <section><img src="output/plots/mean_income_1.png" alt="Mean Income Plot 1" /></section>
-  <section><p>This plot expresses the distribution of mean income per county across the US. [...] several orders of magnitude higher.</p></section>
   <section><img src="output/plots/mean_income_2.png" alt="Mean Income Plot 2" /></section>
-  <section><p>Similar to the mean income concentration, the concentration curve deviates only a small amount from a 45 degree line [...] not a principal factor in determining the distribution of income.</p></section>
   <section><img src="output/plots/mean_income_3.png" alt="Mean Income Plot 3" /></section>
-  <section><p>As we did previously, we can split our original numeric variable into a factor variable with a few levels. [...] less than 5% of counties have a mean income less than 50K.</p></section>
   <section><img src="output/plots/mean_income_4.png" alt="Mean Income Plot 4" /></section>
-  <section><p>More than 3/4s of the counties are between 50K to 100K (orange and red). [...] appeared even more prevalent on this map than the previous plots we saw on median income or population.</p></section>
   <section><img src="output/plots/mean_income_5.png" alt="Mean Income Plot 5" /></section>
-  <section><p>Similar to the density plot of median income, we see an (approximate) normal distribution or bell curve shape. [...] have a mean that falls between 72K and 95K.</p></section>
   <section><img src="output/plots/mean_income_6.png" alt="Mean Income Plot 6" /></section>
-  <section><p>The density plot (or empirical distribution) has the mean income color groupings to relate the distribution back to the previous spatial patterns we observed. [...] effectively dragging the mean rightward of the median.</p></section>
-  <script>
-    fetch('output/tables/mean_income_table.csv')
-      .then(response => response.text())
-      .then(csvText => {
-        const parsed = Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true
-        });
-
-        const headers = parsed.meta.fields;
-        const rows = parsed.data;
-
-        const thead = document.querySelector('#meanIncomeTable thead tr');
-        headers.forEach(h => {
-          const th = document.createElement('th');
-          th.textContent = h;
-          thead.appendChild(th);
-        });
-
-        const tbody = document.querySelector('#meanIncomeTable tbody');
-        rows.forEach(row => {
-          const tr = document.createElement('tr');
-          headers.forEach(h => {
-            const td = document.createElement('td');
-            td.textContent = row[h];
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
-
-        new DataTable('#meanIncomeTable', {
-          scrollY: '400px',
-          scrollCollapse: true,
-          paging: true,
-          pageLength: 25,
-          ordering: false
-        });
-      });
-  </script>
 </main>
+<script>
+  fetch('output/tables/mean_income_table.csv')
+    .then(response => response.text())
+    .then(csvText => {
+      const parsed = Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true
+      });
+
+      const headers = parsed.meta.fields;
+      const rows = parsed.data;
+
+      const thead = document.querySelector('#meanIncomeTable thead tr');
+      headers.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        thead.appendChild(th);
+      });
+
+      const tbody = document.querySelector('#meanIncomeTable tbody');
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+        headers.forEach(h => {
+          const td = document.createElement('td');
+          td.textContent = row[h];
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+
+      new DataTable('#meanIncomeTable', {
+        scrollY: '400px',
+        scrollCollapse: true,
+        paging: true,
+        pageLength: 25,
+        ordering: false
+      });
+    });
+</script>
 </body>
 </html>
