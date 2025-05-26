@@ -70,8 +70,6 @@
       </table>
     </div>
   </section>
-  <section><img src="output/plots/median_income_1.png" alt="Median Income Plot 1" /></section>
-  <section><p>[Text and plots continue as written in the original version...]</p></section>
   <script>
     fetch('output/tables/median_income_table.csv')
       .then(response => response.text())
@@ -111,6 +109,18 @@
         });
       });
   </script>
+  <section><img src="output/plots/median_income_1.png" alt="Median Income Plot 1" /></section>
+  <section><p>The plot above expresses the median income per county across the US. [...] counties still remain consistently higher than about 60K (often close to 100K).</p></section>
+  <section><img src="output/plots/median_income_2.png" alt="Median Income Plot 2" /></section>
+  <section><p>This plot looks at the relationship between cumulative median income across counties. [...] income not drastically changing across counties.</p></section>
+  <section><img src="output/plots/median_income_3.png" alt="Median Income Plot 3" /></section>
+  <section><p>This plot is the same as the previous, but given our new knowledge on the distribution of median income across counties, we can partition to the median income variable into 5 levels: [...] less than 50K has about 15%.</p></section>
+  <section><img src="output/plots/median_income_4.png" alt="Median Income Plot 4" /></section>
+  <section><p>We can now take a more digestible view of the median income distribution across the US with our new factor variable median income group. [...] This is just one conceptual strategy to interpret this geospatial data.</p></section>
+  <section><img src="output/plots/median_income_5.png" alt="Median Income Plot 5" /></section>
+  <section><p>This density plot transparently expresses the distribution of median income per county in the US. [...] between 45K to 86K.</p></section>
+  <section><img src="output/plots/median_income_6.png" alt="Median Income Plot 6" /></section>
+  <section><p>This plot is the same as the previous, yet is supplemented with the median income group partitioning. Something to perhaps explore further is the bump in the yellow region around 22K.</p></section>
 </main>
 </body>
 </html>
