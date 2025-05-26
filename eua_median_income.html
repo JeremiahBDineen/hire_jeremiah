@@ -77,11 +77,50 @@
   <section><img src="output/plots/median_income_3.png" alt="Median Income Plot 3" /></section>
   <section><p>This plot is the same as the previous, but given our new knowledge on the distribution of median income across counties, we can partition to the median income variable into 5 levels: greater than 125K, greater than 100K, greater than 75K, greater than 50K and less than 50K. Note purple and especially blue are just a few counties (under 5%). Red is several times larger than the first two colors with about 16% of total observations. The orange category of 50K to 75K is the largest by far with nearly 60%. Finally, the yellow category of less than 50K has about 15%.</p></section>
   <section><img src="output/plots/median_income_4.png" alt="Median Income Plot 4" /></section>
-  <section><p>We can now take a more digestible view of the median income distribution across the US with our new factor variable median income group. One way to conceptualize this graph is to imagine median income dollars to be a height above sea level. Consider the orange counties to be our baseline ‘sea level’ of 50K to 75K. The orange category is the majority with some yellow counties creating ‘valleys’ below sea level like in Appalachia, the Deep South and New Mexico. Red could correspond to ‘hills’ that reach from 75K to 100K. Purple can be ‘mountains’ with blue as the nation’s highest peaks. This is just one conceptual strategy to interpret this geospatial data.</p></section>
+  <section><p>We can now take a more digestible view of the median income distribution across the US with our new factor variable median income group. One way to conceptualize this graph is to imagine median income dollars to be a height above sea level. Consider the orange counties to be our baseline ‘sea level’ of 50K to 75K. The orange category is the majority with some yellow counties creating ‘valleys’ below sea level like in Appalachia, the deep south and New Mexico. Red could correspond to ‘hills’ that reach from 75K to 100K. Purple can be ‘mountains’ with blue as the nation’s highest peaks. This is just one conceptual strategy to interpret this geospatial data.</p></section>
   <section><img src="output/plots/median_income_5.png" alt="Median Income Plot 5" /></section>
   <section><p>This density plot transparently expresses the distribution of median income per county in the US. The mean and median of the distribution are likely to be close to the peak at about 62K. The bell curve shape is known as a ‘normal’ distribution in statistics where most values fall close to the center with fewer and fewer values existing farther away as you approach the tails on either side. The middle 50% of observations exist between 54K to 73K and the middle 80% of exist between 45K to 86K.</p></section>
   <section><img src="output/plots/median_income_6.png" alt="Median Income Plot 6" /></section>
   <section><p>This plot is the same as the previous, yet is supplemented with the median income group partitioning. Something to perhaps explore further is the bump in the yellow region around 22K.</p></section>
+  <script>
+    fetch('output/tables/median_income_table.csv')
+      .then(response => response.text())
+      .then(csvText => {
+        const parsed = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true
+        });
+
+        const headers = parsed.meta.fields;
+        const rows = parsed.data;
+
+        const thead = document.querySelector('#medianIncomeTable thead tr');
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          thead.appendChild(th);
+        });
+
+        const tbody = document.querySelector('#medianIncomeTable tbody');
+        rows.forEach(row => {
+          const tr = document.createElement('tr');
+          headers.forEach(h => {
+            const td = document.createElement('td');
+            td.textContent = row[h];
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        new DataTable('#medianIncomeTable', {
+          scrollY: '400px',
+          scrollCollapse: true,
+          paging: true,
+          pageLength: 25,
+          ordering: false
+        });
+      });
+  </script>
 </main>
 </body>
 </html>
