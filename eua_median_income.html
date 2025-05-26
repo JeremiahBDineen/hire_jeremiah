@@ -5,21 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Median Income</title>
   <link rel="stylesheet" href="styles.css" />
-<style>
-  section {
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 30px;
-  }
-  section img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-  }
-</style>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    section {
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    section img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
 </head>
 <body>
 <header><nav><ul class="navbar">
@@ -57,6 +61,53 @@
 <main class="page-content">
   <h1>Median Income</h1>
   <section><p>In the following blog post we explore the distribution of median income across US counties in 2023.  This data is sourced from the American Community Survey S1901 tables which can be obtained via https://data.census.gov/table/ACSST5Y2023.S1901?q=income&g=010XX00US$0500000.  </p></section>
+  <section>
+    <h2>Explore Median Income Data Table</h2>
+    <div style="overflow-x: auto; max-height: 500px;">
+      <table id="myTable" class="display" style="width:100%">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+  <script>
+    fetch('output/tables/median_income_table.csv')
+      .then(response => response.text())
+      .then(csvText => {
+        const parsed = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true
+        });
+
+        const headers = parsed.meta.fields;
+        const rows = parsed.data;
+
+        const thead = document.querySelector('#myTable thead tr');
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          thead.appendChild(th);
+        });
+
+        const tbody = document.querySelector('#myTable tbody');
+        rows.forEach(row => {
+          const tr = document.createElement('tr');
+          headers.forEach(h => {
+            const td = document.createElement('td');
+            td.textContent = row[h];
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        new DataTable('#myTable', {
+          scrollY: '400px',
+          scrollCollapse: true,
+          paging: true,
+          pageLength: 25
+        });
+      });
+  </script>
   <section><img src="output/plots/median_income_1.png" alt="Median Income Plot 1" /></section>
   <section><p>The plot above expresses the median income per county across the US.  Perhaps obviously, it appears rural regions with low population tend to have much lower income while urban centers (and the area immediately surrounding them) have quite high median income.  The northeastern corridor has deep blue to purple indicating median incomes between 200K to 100K.  The Midwest has several small purple/blue zones, yet most counties within a wide radius of the cities still have fairly reddish hue indicating 60K to 80K.  The west coast has large cities with expectedly high median income and the surrounding counties still remain consistently higher than about 60K (often close to 100K). </p></section>
   <section><img src="output/plots/median_income_2.png" alt="Median Income Plot 2" /></section>
