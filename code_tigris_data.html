@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tigris_data</title><link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <style>
+    pre {
+      background-color: #f4f4f4;
+      padding: 1em;
+      border-radius: 6px;
+      overflow-x: auto;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <nav>
+    <ul class="navbar">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About Me</a></li>
+      <li class="dropdown"><a href="eua_population.html" class="dropbtn">Exploratory Univariate Analysis</a>
+        <div class="dropdown-content">
+          <a href="eua_population.html">Population</a>
+          <a href="eua_median_income.html">Median Income</a>
+          <a href="eua_mean_income.html">Mean Income</a>
+          <a href="eua_house_price.html">House Price</a>
+          <a href="eua_home_affordability.html">Home Affordability</a>
+        </div>
+      </li>
+      <li class="dropdown"><a href="ima1.html" class="dropbtn">Inferential Multivariate Analysis</a>
+        <div class="dropdown-content">
+          <a href="ima1.html">IMA Blog 1</a>
+          <a href="ima2.html">IMA Blog 2</a>
+          <a href="ima3.html">IMA Blog 3</a>
+          <a href="ima4.html">IMA Blog 4</a>
+          <a href="ima5.html">IMA Blog 5</a>
+        </div>
+      </li>
+      <li class="dropdown"><a href="code_us_county_data.html" class="dropbtn">Code</a>
+        <div class="dropdown-content">
+          <a href="code_us_county_data.html">us_county_data</a>
+          <a href="code_tigris_data.html">tigris_data</a>
+          <a href="code_eua_population.html">eua_population</a>
+          <a href="code_eua_median_income.html">eua_median_income</a>
+          <a href="code_eua_mean_income.html">eua_mean_income</a>
+          <a href="code_eua_house_price.html">eua_house_price</a>
+          <a href="code_eua_home_affordability.html">eua_home_affordability</a>
+          <a href="code_ima_topic1.html">ima_topic1</a>
+          <a href="code_ima_topic2.html">ima_topic2</a>
+          <a href="code_ima_topic3.html">ima_topic3</a>
+          <a href="code_ima_topic4.html">ima_topic4</a>
+          <a href="code_ima_topic5.html">ima_topic5</a>
+        </div>
+      </li>
+      <li><a href="cv.html">CV</a></li>
+    </ul>
+  </nav>
+</header>
+<main class="page-content">
+  <h1>tigris_data</h1>
+  <pre><code class="language-r">
+
+library(tidyverse)
+library(sf)
+library(tigris)
+
+tc_2023= st_as_sf(counties(cb= T, year = 2023))
+tc_2022= st_as_sf(counties(cb= T, year = 2022))
+tc_2021= st_as_sf(counties(cb= T, year = 2021))
+tc_2020= st_as_sf(counties(cb= T, year = 2020))
+tc_2019= st_as_sf(counties(cb= T, year = 2019))
+tc_2018= st_as_sf(counties(cb= T, year = 2018))
+tc_2017= st_as_sf(counties(cb= T, year = 2017))
+tc_2016= st_as_sf(counties(cb= T, year = 2016))
+tc_2015= st_as_sf(counties(cb= T, year = 2015))
+tc_2014= st_as_sf(counties(cb= T, year = 2014))
+tc_2013= st_as_sf(counties(cb= T, year = 2013))
+
+
+tigris= 
+  bind_rows(
+    tc_2023 %>% mutate(data_year='2023'),
+    tc_2022 %>% mutate(data_year='2022'),
+    tc_2021 %>% mutate(data_year='2021'),
+    tc_2020 %>% mutate(data_year='2020'),
+    tc_2019 %>% mutate(data_year='2019'),
+    tc_2018 %>% mutate(data_year='2018'),
+    tc_2017 %>% mutate(data_year='2017'),
+    tc_2016 %>% mutate(data_year='2016'),
+    tc_2015 %>% mutate(data_year='2015'),
+    tc_2014 %>% mutate(data_year='2014'),
+    tc_2013 %>% mutate(data_year='2013'),
+    tc_2013 %>% mutate(data_year='2012'),
+    tc_2013 %>% mutate(data_year='2011'),
+    tc_2013 %>% mutate(data_year='2010'),
+    tc_2013 %>% mutate(data_year='2009'),
+    tc_2013 %>% mutate(data_year='2008'),
+    tc_2013 %>% mutate(data_year='2007'),
+    tc_2013 %>% mutate(data_year='2006'),
+    tc_2013 %>% mutate(data_year='2005'),
+    tc_2013 %>% mutate(data_year='2004'),
+    tc_2013 %>% mutate(data_year='2003'),
+    tc_2013 %>% mutate(data_year='2002'),
+    tc_2013 %>% mutate(data_year='2001'),
+    tc_2013 %>% mutate(data_year='2000'),
+  )
+
+saveRDS(tigris, 'data/tigris_data.rds')
+
+
+    
+  </code></pre>
+</main>
+</body>
+</html>
