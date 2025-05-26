@@ -71,56 +71,56 @@
     </div>
   </section>
   <section><img src="output/plots/population_1.png" alt="Population Plot 1" /></section>
-  <section><p>This is a plot that conveys the population of each county in the US as measured by household count. [...] the center of the country is largely unpopulated with exceptions like Salt Lake City and Denver.</p></section>
+  <section><p>This is a plot that conveys the population of each county in the US as measured by household count. Typically, average American households have 2.3-3.1 people, so you can extrapolate an approximate population per county by multiplying by 2.5. Much of the population is concentrated in coastal regions. Within the Northeastern Corridor from DC to Boston, there are many large and moderately large cities with the suburban areas between the cities also contributing towards a high population for the region. Other highly populated areas include: Chicago, Detroit and other minor Midwest cities; Southern Florida; Dallas, San Antonio and Houston Texas; Seattle and the Bay Area on the Northern Pacific Coast; and of course the Southwest with Las Vegas, Phoenix and Southern California. The center of the country is largely unpopulated with exceptions like Salt Lake City and Denver.</p></section>
   <section><img src="output/plots/population_2.png" alt="Population Plot 2" /></section>
-  <section><p>There are 3,235 counties in 2023 (or county equivalent entities) within the US. [...] it probably does not represent the state of the national economy very accurately.</p></section>
+  <section><p>There are 3,235 counties in 2023 (or county equivalent entities) within the US. This plot depicts the relationship between cumulative population (again – in terms of household count per county) and cumulative percentage of counties. In other words, the concentration of the population across counties. If we isolate the largest 10% of counties, this group represents 2/3rds of the nation’s population. The top 50% percent of counties already account for nearly 95% of the population while the remaining bottom 50% of counties have less than 7% of the population. This concentration can have implications for statistical analysis. For example, if a researcher discovers over 60% of counties have had economic decline within a certain period of time, it may imply a dismal picture. Yet, if a large portion of these 60% of counties include counties with virtually no population, then it probably does not represent the state of the national economy very accurately.</p></section>
   <section><img src="output/plots/population_3.png" alt="Population Plot 3" /></section>
-  <section><p>The first plot includes color where the shade of the color represents the numeric value of household count per county. [...] greater than 100 thousand, greater than 20 thousand and less than 20 thousand.</p></section>
+  <section><p>The first plot includes color where the shade of the color represents the numeric value of household count per county. This is helpful as an initial exploration to understand the data. However, the continuum of color makes interpreting require more attention and may fatigue the end user. Using this first plot in addition to the population concentration plot enables us to partition household count into four levels: greater than 600 thousand, greater than 100 thousand, greater than 20 thousand and less than 20 thousand.</p></section>
   <section><img src="output/plots/population_4.png" alt="Population Plot 4" /></section>
-  <section><p>This plot is considerably easier to digest than the first. [...] consider the quadrilateral with the four corners of Minneapolis, Oklahoma City, Atlanta and Pittsburgh.</p></section>
+  <section><p>This plot is considerably easier to digest than the first. It’s clear that the vast majority of counties have less than 20,000 households. There’s about 6 groupings of areas with at least one county with over 600,000 households. Most of these areas have populations that decay the further you travel from the centers from purple to red to orange and finally back to yellow. Throughout the Midatlantic you can observe urban centers where the county population peaks below 600,000 (consider the quadrilateral with the four corners of Minneapolis, Oklahoma City, Atlanta and Pittsburgh).</p></section>
   <section><img src="output/plots/population_5.png" alt="Population Plot 5" /></section>
-  <section><p>This is a density plot which expresses the amount of observations across the horizontal axis of household count. [...] falls between 2,000 and 84,000.</p></section>
+  <section><p>This is a density plot which expresses the amount of observations across the horizontal axis of household count (once again with each observation being a county). Density plots are helpful for understanding percentiles in context. The 10th, 25th, 75th and 90th percentiles are respectively located at 2,000, 4,000, 26,000 and 84,000. The tenth percentile corresponds to the location on the horizontal axis where 10% of the area under the curve (10% of the observations in the dataset) are to the left and the remaining 90% of the area under the curve is to the right. The middle half of values from the 25th to 75th percentile is 4,000 to 26,000 while the middle 80% of values falls between 2,000 and 84,000.</p></section>
   <section><img src="output/plots/population_6.png" alt="Population Plot 6" /></section>
-  <section><p>Note from the previous plots, we know several counties in the US have more than 600,000 despite our horizontal axis terminating at 180,000. [...] counties being the yellow color with fewer than 20,000 households per county.</p></section>
-</main>
-<script>
-  fetch('output/tables/population_table.csv')
-    .then(response => response.text())
-    .then(csvText => {
-      const parsed = Papa.parse(csvText, {
-        header: true,
-        skipEmptyLines: true
-      });
-
-      const headers = parsed.meta.fields;
-      const rows = parsed.data;
-
-      const thead = document.querySelector('#populationTable thead tr');
-      headers.forEach(h => {
-        const th = document.createElement('th');
-        th.textContent = h;
-        thead.appendChild(th);
-      });
-
-      const tbody = document.querySelector('#populationTable tbody');
-      rows.forEach(row => {
-        const tr = document.createElement('tr');
-        headers.forEach(h => {
-          const td = document.createElement('td');
-          td.textContent = row[h];
-          tr.appendChild(td);
+  <section><p>Note from the previous plots, we know several counties in the US have as more the 600,000 despite our horizontal axis terminating at 180,000. Most of the area under the curve is towards the left and quickly diminishes the further right you go which aligns with the majority of counties being the yellow color with fewer than 20,000 households per county.</p></section>
+  <script>
+    fetch('output/tables/population_table.csv')
+      .then(response => response.text())
+      .then(csvText => {
+        const parsed = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true
         });
-        tbody.appendChild(tr);
-      });
 
-      new DataTable('#populationTable', {
-        scrollY: '400px',
-        scrollCollapse: true,
-        paging: true,
-        pageLength: 25,
-        ordering: false
+        const headers = parsed.meta.fields;
+        const rows = parsed.data;
+
+        const thead = document.querySelector('#populationTable thead tr');
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          thead.appendChild(th);
+        });
+
+        const tbody = document.querySelector('#populationTable tbody');
+        rows.forEach(row => {
+          const tr = document.createElement('tr');
+          headers.forEach(h => {
+            const td = document.createElement('td');
+            td.textContent = row[h];
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        new DataTable('#populationTable', {
+          scrollY: '400px',
+          scrollCollapse: true,
+          paging: true,
+          pageLength: 25,
+          ordering: false
+        });
       });
-    });
-</script>
+  </script>
+</main>
 </body>
 </html>
