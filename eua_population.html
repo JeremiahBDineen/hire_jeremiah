@@ -60,6 +60,7 @@
 </ul></nav></header>
 <main class="page-content">
   <h1>Population</h1>
+  <section><p>In the following blog post we explore the distribution of population across US counties in 2023. This data is sourced from the American Community Survey S1901 tables which can be obtained via https://data.census.gov/table/ACSST5Y2023.S1901?q=income&g=010XX00US$0500000.</p></section>
   <section>
     <h2>Explore Population Data Table</h2>
     <div style="overflow-x: auto; max-height: 500px;">
@@ -69,45 +70,57 @@
       </table>
     </div>
   </section>
-  <script>
-    fetch('output/tables/population_table.csv')
-      .then(response => response.text())
-      .then(csvText => {
-        const parsed = Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true
-        });
-
-        const headers = parsed.meta.fields;
-        const rows = parsed.data;
-
-        const thead = document.querySelector('#populationTable thead tr');
-        headers.forEach(h => {
-          const th = document.createElement('th');
-          th.textContent = h;
-          thead.appendChild(th);
-        });
-
-        const tbody = document.querySelector('#populationTable tbody');
-        rows.forEach(row => {
-          const tr = document.createElement('tr');
-          headers.forEach(h => {
-            const td = document.createElement('td');
-            td.textContent = row[h];
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
-
-        new DataTable('#populationTable', {
-          scrollY: '400px',
-          scrollCollapse: true,
-          paging: true,
-          pageLength: 25,
-          ordering: false
-        });
-      });
-  </script>
+  <section><img src="output/plots/population_1.png" alt="Population Plot 1" /></section>
+  <section><p>This is a plot that conveys the population of each county in the US as measured by household count. [...] the center of the country is largely unpopulated with exceptions like Salt Lake City and Denver.</p></section>
+  <section><img src="output/plots/population_2.png" alt="Population Plot 2" /></section>
+  <section><p>There are 3,235 counties in 2023 (or county equivalent entities) within the US. [...] it probably does not represent the state of the national economy very accurately.</p></section>
+  <section><img src="output/plots/population_3.png" alt="Population Plot 3" /></section>
+  <section><p>The first plot includes color where the shade of the color represents the numeric value of household count per county. [...] greater than 100 thousand, greater than 20 thousand and less than 20 thousand.</p></section>
+  <section><img src="output/plots/population_4.png" alt="Population Plot 4" /></section>
+  <section><p>This plot is considerably easier to digest than the first. [...] consider the quadrilateral with the four corners of Minneapolis, Oklahoma City, Atlanta and Pittsburgh.</p></section>
+  <section><img src="output/plots/population_5.png" alt="Population Plot 5" /></section>
+  <section><p>This is a density plot which expresses the amount of observations across the horizontal axis of household count. [...] falls between 2,000 and 84,000.</p></section>
+  <section><img src="output/plots/population_6.png" alt="Population Plot 6" /></section>
+  <section><p>Note from the previous plots, we know several counties in the US have more than 600,000 despite our horizontal axis terminating at 180,000. [...] counties being the yellow color with fewer than 20,000 households per county.</p></section>
 </main>
+<script>
+  fetch('output/tables/population_table.csv')
+    .then(response => response.text())
+    .then(csvText => {
+      const parsed = Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true
+      });
+
+      const headers = parsed.meta.fields;
+      const rows = parsed.data;
+
+      const thead = document.querySelector('#populationTable thead tr');
+      headers.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        thead.appendChild(th);
+      });
+
+      const tbody = document.querySelector('#populationTable tbody');
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+        headers.forEach(h => {
+          const td = document.createElement('td');
+          td.textContent = row[h];
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+
+      new DataTable('#populationTable', {
+        scrollY: '400px',
+        scrollCollapse: true,
+        paging: true,
+        pageLength: 25,
+        ordering: false
+      });
+    });
+</script>
 </body>
 </html>
