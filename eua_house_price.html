@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>House Price</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     section {
       background-color: #ffffff;
@@ -57,6 +61,15 @@
 <main class="page-content">
   <h1>House Price</h1>
   <section><p>In the following blog post we explore the distribution of house price across US counties in 2023. This data is sourced from Zillow’s ZHI (https://www.zillow.com/research/data/) which they describe as “A measure of the typical home value … across a given region and housing type. It reflects the typical value for homes in the 35th to 65th percentile range.” Specifically, this dataset is for single family residence which may make the analysis less accurate for regions where other home styles are more prevalent but also ensures values from different areas are being compared on a more ‘apples to apples’ basis.</p></section>
+  <section>
+    <h2>Explore House Price Data Table</h2>
+    <div style="overflow-x: auto; max-height: 500px;">
+      <table id="housePriceTable" class="display" style="width:100%">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
   <section><img src="output/plots/house_price_1.png" alt="House Price Plot 1" /></section>
   <section><p>Plotted above is typical home price per county across the US in 2023. Much of this plot has similar features to the previous spatial plots we’ve seen. Coastal areas, urban centers and surrounding land of urban centers tend to have higher values for population, median income, mean income and estimated housing price. Compared to the previous plots, patterns of central peaks with clear radii of decaying values seems more symmetric, more coherent and more consistent. Also worthy of note are some missing values yielding gray counties in several spots.</p></section>
   <section><img src="output/plots/house_price_2.png" alt="House Price Plot 2" /></section>
@@ -69,6 +82,45 @@
   <section><p>At first glance this empirical distribution loosely adheres to the normal bell curve pattern, however the right tail seems considerably larger than the left tail which suggests right skewness (a gamma distribution may be more fitting than a normal distribution). A normal curve would have the peak (mode), mean and median all coincide while, the peak occurs already at the 25th percentile. Many counties have an estimated house price the falls between 90K to 250K (perhaps about 60%). The right tail smoothly decays suggesting no abrupt threshold of estimated house price where observations become less frequent, but rather a gradual decrease in occurrence as estimated house price increases.</p></section>
   <section><img src="output/plots/house_price_6.png" alt="House Price Plot 6" /></section>
   <section><p>Here we can see that the less than 125K group contains a large amount of the concentrated region between 75K to 250K (or at least the left side of it). The orange group of 125K to 175K is a narrow band that is just 50K wide, yet contains many observations as well as the peak at 150K. The red group from 175K to 250K can be viewed as the right side of the concentrated region between 75K to 250K. The purple contains the recession from the densely populated 250K region to the sparsely populated 500K+ region. Note both the 75th and 90th percentile exist within the bounds of the purple group (with a decent margin on either side). The blue region has the most expensively priced counties and observations drastically decrease after 700K.</p></section>
+  <script>
+    fetch('output/tables/house_price_table.csv')
+      .then(response => response.text())
+      .then(csvText => {
+        const parsed = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true
+        });
+
+        const headers = parsed.meta.fields;
+        const rows = parsed.data;
+
+        const thead = document.querySelector('#housePriceTable thead tr');
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          thead.appendChild(th);
+        });
+
+        const tbody = document.querySelector('#housePriceTable tbody');
+        rows.forEach(row => {
+          const tr = document.createElement('tr');
+          headers.forEach(h => {
+            const td = document.createElement('td');
+            td.textContent = row[h];
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        new DataTable('#housePriceTable', {
+          scrollY: '400px',
+          scrollCollapse: true,
+          paging: true,
+          pageLength: 25
+        });
+      });
+  </script>
 </main>
 </body>
 </html>
+
