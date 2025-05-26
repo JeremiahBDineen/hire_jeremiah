@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>eua_mean_income</title><link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <style>
+    pre {
+      background-color: #f4f4f4;
+      padding: 1em;
+      border-radius: 6px;
+      overflow-x: auto;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <nav>
+    <ul class="navbar">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About Me</a></li>
+      <li class="dropdown"><a href="eua_population.html" class="dropbtn">Exploratory Univariate Analysis</a>
+        <div class="dropdown-content">
+          <a href="eua_population.html">Population</a>
+          <a href="eua_median_income.html">Median Income</a>
+          <a href="eua_mean_income.html">Mean Income</a>
+          <a href="eua_house_price.html">House Price</a>
+          <a href="eua_home_affordability.html">Home Affordability</a>
+        </div>
+      </li>
+      <li class="dropdown"><a href="ima1.html" class="dropbtn">Inferential Multivariate Analysis</a>
+        <div class="dropdown-content">
+          <a href="ima1.html">IMA Blog 1</a>
+          <a href="ima2.html">IMA Blog 2</a>
+          <a href="ima3.html">IMA Blog 3</a>
+          <a href="ima4.html">IMA Blog 4</a>
+          <a href="ima5.html">IMA Blog 5</a>
+        </div>
+      </li>
+      <li class="dropdown"><a href="code_us_county_data.html" class="dropbtn">Code</a>
+        <div class="dropdown-content">
+          <a href="code_us_county_data.html">us_county_data</a>
+          <a href="code_tigris_data.html">tigris_data</a>
+          <a href="code_eua_population.html">eua_population</a>
+          <a href="code_eua_median_income.html">eua_median_income</a>
+          <a href="code_eua_mean_income.html">eua_mean_income</a>
+          <a href="code_eua_house_price.html">eua_house_price</a>
+          <a href="code_eua_home_affordability.html">eua_home_affordability</a>
+          <a href="code_ima_topic1.html">ima_topic1</a>
+          <a href="code_ima_topic2.html">ima_topic2</a>
+          <a href="code_ima_topic3.html">ima_topic3</a>
+          <a href="code_ima_topic4.html">ima_topic4</a>
+          <a href="code_ima_topic5.html">ima_topic5</a>
+        </div>
+      </li>
+      <li><a href="cv.html">CV</a></li>
+    </ul>
+  </nav>
+</header>
+<main class="page-content">
+  <h1>eua_mean_income</h1>
+  <pre><code class="language-r">
+
+library(tidyverse)
+library(sf)
+library(colorspace)
+library(scales)
+library(patchwork)
+
+map_color= function(x) {
+  anchor_values= c(0, 50e3, 75e3, 100e3, 125e3)
+  anchor_colors= c("#FFFF00", "#FFA500", "#FF0000", "purple", '#0000FF')
+  anchor_rgb= col2rgb(anchor_colors) / 255
+  color_result= character(length(x))
+  
+  for (i in seq_along(x)) {
+    val= x[i]
+    if (is.na(val)) {
+      color_result[i]= '#BEBEBE'
+      next
+    }
+    
+    val_clamped= max(min(val, max(anchor_values)), min(anchor_values))
+    zone= findInterval(val_clamped, anchor_values, rightmost.closed = TRUE)
+    x0= anchor_values[zone]
+    x1= anchor_values[zone + 1]
+    t= (val_clamped - x0) / (x1 - x0)
+    rgb_start= anchor_rgb[, zone]
+    rgb_end= anchor_rgb[, zone + 1]
+    rgb_interp= (1 - t) * rgb_start + t * rgb_end
+    rgb_interp= pmin(pmax(rgb_interp, 0), 1)
+    color_result[i]= rgb(rgb_interp[1], rgb_interp[2], rgb_interp[3])
+  }
+  return(color_result)
+}
+
+county_data=
+  readRDS('data/us_county.rds') %>%
+  filter(cohort=='household', data_year == '2023') %>%
+  arrange(desc(mean_income)) %>%
+  mutate(
+    cum_mean_income= cumsum(mean_income)/sum(mean_income, na.rm=T),
+    cum_county= 1:n()/n(),
+    mean_income_group= factor(case_when(
+      mean_income > 125e3 ~ '> 125K',
+      mean_income >  100e3 ~ '> 100K',
+      mean_income >  75e3 ~ '>  75K',
+      mean_income >  50e3 ~ '>  50K',
+      mean_income <= 50e3 ~ '<= 50K',
+      .default= NA),
+      ordered=T,
+      levels= c('> 125K', '> 100K', '>  75K', '>  50K','<= 50K')),
+    mean_income_gradient= map_color(mean_income))
+
+write.csv(
+  county_data %>%
+    mutate(
+      mean_income= formatC(mean_income, format= 'd', big.mark= ','),
+      cum_county= paste0(round(100*cum_county, 2), '%'),
+      cum_mean_income= paste0(round(100*cum_mean_income, 2), '%')
+    ) %>%
+    select(county, state, mean_income, cum_county, cum_mean_income) %>%
+    filter(!is.na(county)),
+  'output/tables/mean_income_table.csv',
+  row.names= F)
+
+(
+  ggplot(county_data %>% filter(!State %in% c('AK', 'HI', 'PR', 'VI', 'AS', 'GU', 'MP'))) +
+    geom_sf(aes(geometry = geometry, fill = mean_income_gradient)) +
+    scale_fill_identity(na.value = "darkgray") +
+    ggtitle("2023 mean income per County") +
+    theme_void()
+) /
+  (
+    ggplot(tibble(
+      x = seq(0, 200*1e3, length.out = 100),
+      y = 1,
+      fill = map_color(x)),
+      aes(x= x, y= y, fill= fill)) +
+      geom_tile() +
+      scale_fill_identity() +
+      scale_x_continuous(
+        breaks = seq(0, 200*1e3, by= 25*1e3),
+        labels = label_number(scale_cut= cut_short_scale()),
+        expand = c(0, 0)
+      ) +
+      theme_void() +
+      theme(
+        axis.text.x = element_text(size= 10),
+        axis.ticks.x = element_line(linewidth= 0.3),
+        plot.margin = margin(0, 0, 0, 0))
+  ) + plot_layout(heights = c(10, 1))
+ggsave("output/plots/mean_income_1.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(county_data) + 
+  ggtitle('2023 Concentration of mean_income across counties') +
+  geom_line(aes(x= cum_county, y= cum_mean_income)) +
+  geom_area(aes(x= cum_county, y= cum_mean_income), fill= 'red', alpha= .1) +
+  scale_y_continuous(breaks= seq(0, 1, .25), minor_breaks= seq(0, 1, .05)) +
+  scale_x_continuous(breaks= seq(0, 1, .1), minor_breaks= NULL)
+ggsave("output/plots/mean_income_2.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(county_data) + 
+  ggtitle('2023 Concentration of mean_income across counties by mean income group') +
+  geom_line(aes(x= cum_county, y= cum_mean_income, group= mean_income_group)) +
+  geom_area(aes(x= cum_county, y= cum_mean_income, group= mean_income_group, fill= mean_income_group), alpha= .4) +
+  scale_y_continuous(breaks= seq(0, 1, .25), minor_breaks= seq(0, 1, .05)) +
+  scale_x_continuous(breaks= seq(0, 1, .1), minor_breaks= NULL) +
+  scale_fill_manual(values = c('#0000FF', "purple", "#FF0000", "#FFA500", "#FFFF00"))
+ggsave("output/plots/mean_income_3.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(county_data %>% filter(!State %in% c('AK', 'HI', 'PR', 'VI', 'AS', 'GU', 'MP'))) +
+  ggtitle('2023 mean income per county') +
+  geom_sf(aes(geometry= geometry, fill= mean_income_group)) +
+  theme(
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank()
+  ) +
+  scale_fill_manual(values = c('#0000FF', "purple", "#FF0000", "#FFA500", "#FFFF00"))
+ggsave("output/plots/mean_income_4.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(county_data %>% filter(mean_income < quantile(mean_income, 0.995, na.rm= T))) +
+  geom_density(aes(x= mean_income), fill= 'red', alpha= .2) +
+  geom_vline(
+    data = county_data %>% reframe(value= quantile(mean_income, c(.1, .25, .75, .9), na.rm=T)) %>% mutate(percentile= c('10th', '25th', '75th', '90th')),
+    aes(xintercept= value, color= percentile),
+    linetype= "dashed",
+    linewidth= 0.8
+  ) +
+  geom_text(
+    data = county_data %>% reframe(value= quantile(mean_income, c(.1, .25, .75, .9), na.rm=T)) %>% mutate(percentile= c('10th', '25th', '75th', '90th')),
+    aes(x= value, y= 0, label= paste0(1e-3*round(value, -3),'K'), color= percentile),
+    vjust= 1.5,
+    size= 3
+  ) +
+  scale_color_manual(values = c('darkgray', 'darkgray', 'darkgray', 'darkgray')) +
+  theme_minimal() +
+  labs(
+    title= "2023 Distribution of mean income per county",
+    x= "mean_income",
+    y= "density"
+  ) +
+  scale_x_continuous(
+    name= "mean income",
+    breaks= seq(0, 200e3, 50e3),
+    labels= paste0(seq(0, 200, 50), "K"),
+    minor_breaks= seq(0, 200e3, 10e3)
+  ) +
+  scale_y_continuous(breaks= NULL, labels= NULL)
+ggsave("output/plots/mean_income_5.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+density_df= density(
+  county_data %>%
+    filter(mean_income < quantile(mean_income, 0.995, na.rm= T)) %>%
+    pull(mean_income),
+  na.rm=T)
+
+density_df=
+  data.frame(x= density_df$x, y= density_df$y) %>%
+  mutate(mean_income= factor(case_when(
+    x > 125e3 ~ '> 125K',
+    x >  100e3 ~ '> 100K',
+    x >   75e3 ~ '>  75K',
+    x >  50e3 ~ '>  50K',
+    x <= 50e3 ~ '<= 50K',
+    .default= NA),
+    ordered=T,
+    levels= c('> 125K', '> 100K', '>  75K', '>  50K','<= 50K')))
+
+ggplot() +
+  geom_area(data= density_df, aes(x= x, y= y, fill= mean_income)) +
+  geom_line(data= density_df, aes(x= x, y= y)) +
+  geom_vline(
+    data = county_data %>% reframe(value= quantile(mean_income, c(.1, .25, .75, .9), na.rm=T)) %>% mutate(percentile= c('10th', '25th', '75th', '90th')),
+    aes(xintercept= value, color= percentile),
+    linetype= "dashed",
+    linewidth= 0.8
+  ) +
+  geom_text(
+    data = county_data %>% reframe(value= quantile(mean_income, c(.1, .25, .75, .9), na.rm=T)) %>% mutate(percentile= c('10th', '25th', '75th', '90th')),
+    aes(x= value, y= 0, label= paste0(1e-3*round(value, -3),'K'), color= percentile),
+    vjust= 1.5,
+    size= 3
+  ) +
+  scale_color_manual(values = c('darkgray', 'darkgray', 'darkgray', 'darkgray')) +
+  scale_fill_manual(values = c('blue', "purple", "#FF0000", "#FFA500", "#FFFF00")) +
+  theme_minimal() +
+  labs(
+    title= "2023 Distribution of mean income per county",
+    x= "mean_income",
+    y= "density"
+  ) +
+  scale_x_continuous(
+    name= "Households per county",
+    breaks= seq(0, 200e3, 50e3),
+    labels= paste0(seq(0, 200, 50), "K"),
+    minor_breaks= seq(0, 200e3, 10e3)
+  ) +
+  scale_y_continuous(breaks= NULL, labels= NULL)
+ggsave("output/plots/mean_income_6.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+
+    
+  </code></pre>
+</main>
+</body>
+</html>
