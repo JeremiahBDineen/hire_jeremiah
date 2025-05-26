@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Home Affordability</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     section {
       background-color: #ffffff;
@@ -57,6 +61,15 @@
 <main class="page-content">
   <h1>Home Affordability</h1>
   <section><p>In the following blog post we explore the distribution of home affordability across US counties in 2023. This section uses data from both ACS and Zillow.</p></section>
+  <section>
+    <h2>Explore Home Affordability Data Table</h2>
+    <div style="overflow-x: auto; max-height: 500px;">
+      <table id="homeAffordabilityTable" class="display" style="width:100%">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
   <section><img src="output/plots/home_affordability_1.png" alt="Home Affordability Plot 1" /></section>
   <section><p>In this plot we get a glimpse at home affordability, meaning the difficulty of purchasing a home across each county in the US. [...] the color seems to smoothly adjust in most areas of the country.</p></section>
   <section><img src="output/plots/home_affordability_2.png" alt="Home Affordability Plot 2" /></section>
@@ -69,6 +82,44 @@
   <section><p>The distribution of home affordability values across US counties appears vaguely normal with a slight right skewed tail, similar yet not as pronounced as the distribution of estimated home price. [...] around the value of 10.</p></section>
   <section><img src="output/plots/home_affordability_6.png" alt="Home Affordability Plot 6" /></section>
   <section><p>Here we can see once again that the majority of values are in the orange group of 2 to 4 for home affordability value. [...] the high outliers above 7 covered by the purple group.</p></section>
+  <script>
+    fetch('output/tables/home_affordability_table.csv')
+      .then(response => response.text())
+      .then(csvText => {
+        const parsed = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true
+        });
+
+        const headers = parsed.meta.fields;
+        const rows = parsed.data;
+
+        const thead = document.querySelector('#homeAffordabilityTable thead tr');
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          thead.appendChild(th);
+        });
+
+        const tbody = document.querySelector('#homeAffordabilityTable tbody');
+        rows.forEach(row => {
+          const tr = document.createElement('tr');
+          headers.forEach(h => {
+            const td = document.createElement('td');
+            td.textContent = row[h];
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        new DataTable('#homeAffordabilityTable', {
+          scrollY: '400px',
+          scrollCollapse: true,
+          paging: true,
+          pageLength: 25
+        });
+      });
+  </script>
 </main>
 </body>
 </html>
