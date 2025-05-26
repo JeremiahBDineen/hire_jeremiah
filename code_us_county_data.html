@@ -3,41 +3,209 @@
 <head>
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>us_county_data</title><link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <style>
+    pre {
+      background-color: #f4f4f4;
+      padding: 1em;
+      border-radius: 6px;
+      overflow-x: auto;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body>
+<header>
+  <nav>
+    <ul class="navbar">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About Me</a></li>
+      <li class="dropdown"><a href="eua_population.html" class="dropbtn">Exploratory Univariate Analysis</a>
+        <div class="dropdown-content">
+          <a href="eua_population.html">Population</a>
+          <a href="eua_median_income.html">Median Income</a>
+          <a href="eua_mean_income.html">Mean Income</a>
+          <a href="eua_house_price.html">House Price</a>
+          <a href="eua_home_affordability.html">Home Affordability</a>
+        </div>
+      </li>
+      <li class="dropdown"><a href="ima1.html" class="dropbtn">Inferential Multivariate Analysis</a>
+        <div class="dropdown-content">
+          <a href="ima1.html">IMA Blog 1</a>
+          <a href="ima2.html">IMA Blog 2</a>
+          <a href="ima3.html">IMA Blog 3</a>
+          <a href="ima4.html">IMA Blog 4</a>
+          <a href="ima5.html">IMA Blog 5</a>
+        </div>
+      </li>
+      <li class="dropdown"><a href="code_us_county_data.html" class="dropbtn">Code</a>
+        <div class="dropdown-content">
+          <a href="code_us_county_data.html">us_county_data</a>
+          <a href="code_eua_population.html">eua_population</a>
+          <a href="code_eua_median_income.html">eua_median_income</a>
+          <a href="code_ima_topic1.html">ima_topic1</a>
+          <a href="code_ima_topic2.html">ima_topic2</a>
+          <a href="code_ima_topic3.html">ima_topic3</a>
+          <a href="code_ima_topic4.html">ima_topic4</a>
+          <a href="code_ima_topic5.html">ima_topic5</a>
+        </div>
+      </li>
+      <li><a href="cv.html">CV</a></li>
+    </ul>
+  </nav>
+</header>
 
-<header><nav><ul class="navbar">
-  <li><a href="index.html">Home</a></li>
-  <li><a href="about.html">About Me</a></li>
-  <li class="dropdown"><a href="eua_population.html" class="dropbtn">Exploratory Univariate Analysis</a>
-    <div class="dropdown-content">
-      <a href="eua_population.html">Population</a>
-      <a href="eua_median_income.html">Median Income</a>
-      <a href="eua_mean_income.html">Mean Income</a>
-      <a href="eua_house_price.html">House Price</a>
-      <a href="eua_home_affordability.html">Home Affordability</a>
-    </div></li>
-  <li class="dropdown"><a href="ima1.html" class="dropbtn">Inferential Multivariate Analysis</a>
-    <div class="dropdown-content">
-      <a href="ima1.html">IMA Blog 1</a>
-      <a href="ima2.html">IMA Blog 2</a>
-      <a href="ima3.html">IMA Blog 3</a>
-      <a href="ima4.html">IMA Blog 4</a>
-      <a href="ima5.html">IMA Blog 5</a>
-    </div></li>
-  <li class="dropdown"><a href="code_us_county_data.html" class="dropbtn">Code</a>
-    <div class="dropdown-content">
-      <a href="code_us_county_data.html">us_county_data</a>
-      <a href="code_eua_population.html">eua_population</a>
-      <a href="code_eua_median_income.html">eua_median_income</a>
-      <a href="code_ima_topic1.html">ima_topic1</a>
-      <a href="code_ima_topic2.html">ima_topic2</a>
-      <a href="code_ima_topic3.html">ima_topic3</a>
-      <a href="code_ima_topic4.html">ima_topic4</a>
-      <a href="code_ima_topic5.html">ima_topic5</a>
-    </div></li>
-  <li><a href="cv.html">CV</a></li>
-</ul></nav></header>
+<main class="page-content">
+  <h1>us_county_data</h1>
+  <pre><code class="language-r">
 
-<main class="page-content"><h1>us_county_data</h1><p>Placeholder for us_county_data code</p></main>
-</body></html>
+library(tidyverse)
+library(sf)
+library(tigris)
+
+# https://data.census.gov/table/ACSST5Y2023.S1901?q=income&g=010XX00US$0500000 S1901 
+# 2023 dollars
+# https://www.zillow.com/research/data/
+'Zillow Home Value Index (ZHVI): A measure of the typical home value and market changes across a given region and housing type. It reflects the typical value for homes in the 35th to 65th percentile range. Available as a smoothed, seasonally adjusted measure and as a raw measure.
+Zillow publishes top-tier ZHVI ($, typical value for homes within the 65th to 95th percentile range for a given region) and bottom-tier ZHVI ($, typical value for homes within the 5th to 35th percentile range for a given region).
+
+Zillow also publishes ZHVI for all single-family residences ($, typical value for all single-family homes in a given region), for condo/coops ($), for all homes with 1, 2, 3, 4 and 5+ bedrooms ($).
+
+Note: Starting with the January 2023 data release, and for all subsequent releases, the full ZHVI time series has been upgraded to harness the power of the neural Zestimate.
+
+More information about what ZHVI is and how it’s calculated is available on this overview page. Here’s a handy ZHVI User Guide for information about properly citing and making calculations with this metric.'
+
+acs= 
+  bind_rows(
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2023.S1901-Data.csv") %>%
+      mutate(data_year= '2023') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2022.S1901-Data.csv") %>%
+      mutate(data_year= '2022') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2021.S1901-Data.csv") %>%
+      mutate(data_year= '2021') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2020.S1901-Data.csv") %>%
+      mutate(data_year= '2020') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2019.S1901-Data.csv") %>%
+      mutate(data_year= '2019') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2018.S1901-Data.csv") %>%
+      mutate(data_year= '2018') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2017.S1901-Data.csv") %>%
+      mutate(data_year= '2017') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2016.S1901-Data.csv") %>%
+      mutate(data_year= '2016') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2015.S1901-Data.csv") %>%
+      mutate(data_year= '2015') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2014.S1901-Data.csv") %>%
+      mutate(data_year= '2014') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2013.S1901-Data.csv") %>%
+      mutate(data_year= '2013') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2012.S1901-Data.csv") %>%
+      mutate(data_year= '2012') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2011.S1901-Data.csv") %>%
+      mutate(data_year= '2011') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+    
+    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2010.S1901-Data.csv") %>%
+      mutate(data_year= '2010') %>%
+      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
+  ) %>%
+  filter(GEO_ID!= 'Geography') %>%
+  pivot_longer(
+    cols = c(-data_year, -GEO_ID, -NAME),
+    names_to = c("cohort", ".value"),
+    names_pattern = "S1901_(C0\\d)_(\\d{3}E)"
+  ) %>%
+  rename(county= NAME, household_count= `001E`, median_income= `012E`, mean_income= `013E`) %>%
+  mutate(
+    cohort = case_when(
+      cohort == "C01" ~ "household",
+      cohort == "C02" ~ "family",
+      cohort == "C03" ~ "married_couple",
+      cohort == "C04" ~ "non_family",
+      .default= NA
+    ),
+    
+    GEOID= str_sub(GEO_ID, 10,14),
+    
+    state= str_extract(county, '(?<=,\\s).+$'),
+    
+    county = case_when(
+      str_detect(county, 'County')~ str_extract(county, "^[^,]+(?= County)"),
+      .default= str_extract(county, "^[^,]+")),
+    
+    household_count= case_when(
+      household_count %in% c('N', '-', '(X)', 'null') ~ as.numeric(NA),
+      .default= as.numeric(household_count)
+    ),
+    
+    median_income= case_when(
+      median_income %in% c('N', '-', '(X)', 'null') ~ as.numeric(NA),
+      .default= as.numeric(median_income)
+    ),
+    
+    mean_income= case_when(
+      mean_income %in% c('N', '-', '(X)', 'null') ~ as.numeric(NA),
+      .default= as.numeric(mean_income)
+    ),
+    date= ymd(paste0(data_year, '-01-01'))
+  ) %>%
+  select(data_year, cohort, county, state, household_count, median_income, mean_income, GEOID, date) 
+  
+house_price=
+  read.csv("data/County_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv") %>%
+  pivot_longer(cols= starts_with("X"), names_to= "date", values_to= "estimated_house_price") %>%
+  mutate(
+    date= ymd(str_replace(date, "X", "")) + days(1),
+    
+    StateCodeFIPS= str_pad(StateCodeFIPS, width = 2, pad = "0"),
+    
+    MunicipalCodeFIPS= str_pad(MunicipalCodeFIPS, width = 3, pad = "0"),
+    
+    GEOID= paste0(StateCodeFIPS, MunicipalCodeFIPS)
+  ) %>%
+  select(RegionName, State, Metro, date, estimated_house_price, GEOID)
+
+us_county= 
+  full_join(acs, house_price, by= c('GEOID'='GEOID', 'date'='date')) %>%
+  filter(!is.na(data_year)) %>%
+  full_join(readRDS('data/tigris_data.rds'), by= c('GEOID'='GEOID', 'data_year'='data_year')) %>%
+  select(cohort, data_year, date, GEOID, county, state, State, STUSPS, Metro, geometry, household_count, median_income, mean_income, estimated_house_price) %>%
+  mutate(
+    cohort= case_when(is.na(cohort)~ 'household', .default= cohort),
+    State= case_when(is.na(State)~ STUSPS, .default= State),
+    date= case_when(is.na(date)~ ymd(paste0(data_year, '-01-01')), .default= date)
+    )
+
+saveRDS(us_county, 'data/us_county.rds')
+     
+  
+  </code></pre>
+</main>
+</body>
+</html>
