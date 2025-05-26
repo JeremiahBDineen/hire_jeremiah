@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     section {
       background-color: #ffffff;
@@ -61,39 +62,51 @@
   <h1>Population</h1>
   <section><p>In the following blog post we explore the distribution of population across US counties in 2023.  This data is sourced from the American Community Survey S1901 tables which can be obtained via https://data.census.gov/table/ACSST5Y2023.S1901?q=income&g=010XX00US$0500000. </p></section>
   <section>
-    <h2>Explore Population Data Table</h2>
+  <h2>Explore Population Data Table</h2>
+  <div style="overflow-x: auto; max-height: 500px;">
     <table id="myTable" class="display" style="width:100%">
       <thead><tr></tr></thead>
       <tbody></tbody>
     </table>
-  </section>
+  </div>
+</section>
   <script>
     fetch('output/tables/population_table.csv')
-      .then(response => response.text())
-      .then(csv => {
-        const lines = csv.split('\n').filter(line => line.trim() !== '');
-        const headers = lines[0].split(',');
-        const rows = lines.slice(1).map(row => row.split(','));
+  .then(response => response.text())
+  .then(csvText => {
+    const parsed = Papa.parse(csvText, {
+      header: true,
+      skipEmptyLines: true
+    });
 
-        const thead = document.querySelector('#myTable thead tr');
-        headers.forEach(h => {
-          const th = document.createElement('th');
-          th.textContent = h;
-          thead.appendChild(th);
-        });
+    const headers = parsed.meta.fields;
+    const rows = parsed.data;
 
-        const tbody = document.querySelector('#myTable tbody');
-        rows.forEach(row => {
-          const tr = document.createElement('tr');
-          row.forEach(cell => {
-            const td = document.createElement('td');
-            td.textContent = cell;
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
+    const thead = document.querySelector('#myTable thead tr');
+    headers.forEach(h => {
+      const th = document.createElement('th');
+      th.textContent = h;
+      thead.appendChild(th);
+    });
 
-        new DataTable('#myTable', { pageLength: 25 });
+    const tbody = document.querySelector('#myTable tbody');
+    rows.forEach(row => {
+      const tr = document.createElement('tr');
+      headers.forEach(h => {
+        const td = document.createElement('td');
+        td.textContent = row[h];
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+    new DataTable('#myTable', {
+      scrollY: '400px',
+      scrollCollapse: true,
+      paging: true,
+      pageLength: 25
+    });
+  });
       });
   </script>
   <section><img src="output/plots/population_1.png" alt="Population Plot 1" /></section>
