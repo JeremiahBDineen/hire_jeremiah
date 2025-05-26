@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mean Income</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     section {
       background-color: #ffffff;
@@ -57,18 +61,53 @@
 <main class="page-content">
   <h1>Mean Income</h1>
   <section><p>In the following blog post we explore the distribution of mean income across US counties in 2023. This data is sourced from the American Community Survey S1901 tables which can be obtained via https://data.census.gov/table/ACSST5Y2023.S1901?q=income&g=010XX00US$0500000.</p></section>
-  <section><img src="output/plots/mean_income_1.png" alt="Mean Income Plot 1" /></section>
-  <section><p>This plot expresses the distribution of mean income per county across the US. [...] several orders of magnitude higher.</p></section>
-  <section><img src="output/plots/mean_income_2.png" alt="Mean Income Plot 2" /></section>
-  <section><p>Similar to the mean income concentration, the concentration curve deviates only a small amount from a 45 degree line [...] not a principal factor in determining the distribution of income.</p></section>
-  <section><img src="output/plots/mean_income_3.png" alt="Mean Income Plot 3" /></section>
-  <section><p>As we did previously, we can split our original numeric variable into a factor variable with a few levels. [...] less than 5% of counties have a mean income less than 50K.</p></section>
-  <section><img src="output/plots/mean_income_4.png" alt="Mean Income Plot 4" /></section>
-  <section><p>More than 3/4s of the counties are between 50K to 100K (orange and red). [...] appeared even more prevalent on this map than the previous plots we saw on median income or population.</p></section>
-  <section><img src="output/plots/mean_income_5.png" alt="Mean Income Plot 5" /></section>
-  <section><p>Similar to the density plot of median income, we see an (approximate) normal distribution or bell curve shape. [...] have a mean that falls between 72K and 95K.</p></section>
-  <section><img src="output/plots/mean_income_6.png" alt="Mean Income Plot 6" /></section>
-  <section><p>The density plot (or empirical distribution) has the mean income color groupings to relate the distribution back to the previous spatial patterns we observed. [...] effectively dragging the mean rightward of the median.</p></section>
+  <section>
+    <h2>Explore Mean Income Data Table</h2>
+    <div style="overflow-x: auto; max-height: 500px;">
+      <table id="meanIncomeTable" class="display" style="width:100%">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+  <script>
+    fetch('output/tables/mean_income_table.csv')
+      .then(response => response.text())
+      .then(csvText => {
+        const parsed = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true
+        });
+
+        const headers = parsed.meta.fields;
+        const rows = parsed.data;
+
+        const thead = document.querySelector('#meanIncomeTable thead tr');
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          thead.appendChild(th);
+        });
+
+        const tbody = document.querySelector('#meanIncomeTable tbody');
+        rows.forEach(row => {
+          const tr = document.createElement('tr');
+          headers.forEach(h => {
+            const td = document.createElement('td');
+            td.textContent = row[h];
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        new DataTable('#meanIncomeTable', {
+          scrollY: '400px',
+          scrollCollapse: true,
+          paging: true,
+          pageLength: 25
+        });
+      });
+  </script>
 </main>
 </body>
 </html>
