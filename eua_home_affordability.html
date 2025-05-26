@@ -5,21 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Home Affordability</title>
   <link rel="stylesheet" href="styles.css" />
-<style>
-  section {
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 30px;
-  }
-  section img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-  }
-</style>
+  <style>
+    section {
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    section img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
 </head>
 <body>
 <header><nav><ul class="navbar">
@@ -56,19 +56,19 @@
 </ul></nav></header>
 <main class="page-content">
   <h1>Home Affordability</h1>
-  <section><p>In the following blog post we explore the distribution of home affordability across US counties in 2023.  This section uses data from both ACS and Zillow.  </p></section>
+  <section><p>In the following blog post we explore the distribution of home affordability across US counties in 2023. This section uses data from both ACS and Zillow.</p></section>
   <section><img src="output/plots/home_affordability_1.png" alt="Home Affordability Plot 1" /></section>
-  <section><p>In this plot we get a glimpse at home affordability, meaning the difficulty of purchasing a home across each county in the US.  Home affordability is specifically being defined as the ratio of estimated house price to the median income (within each county).  If one were to save their entire gross income every year, this value would convey the amount of years for the typical household to accrue enough to purchase a typical home.  If a household were to save half their gross income, then we could double the ratio value to get how many years it would take to purchase a home.   The counties with highest values appear to be located around urban centers, however not all urban centers seem to have a high home affordability value.  Much of the western US has the highest values mostly ranging from 7 to 12, even in areas not directly adjacent to urban centers.  Compared to the previous spatial plots, counties seem to adhere closely to the counties in their locality.  Sudden shifts in home affordability don’t seem prevalent within a ‘neighborhood’ of counties as the color seems to smoothly adjust in most areas of the country.  </p></section>
+  <section><p>In this plot we get a glimpse at home affordability, meaning the difficulty of purchasing a home across each county in the US. [...] the color seems to smoothly adjust in most areas of the country.</p></section>
   <section><img src="output/plots/home_affordability_2.png" alt="Home Affordability Plot 2" /></section>
-  <section><p>This concentration curve appears less concentrated than population and estimated house price, yet more concentrated than median income and mean income.  The top 10% of counties contribute to 20% of the cumulative home affordability and the top 50% of counties contribute to 67% of cumulative home affordability.  It is important to note the term ‘home affordability’ is slightly misleading as higher values describe a higher estimated home price in relation to median income meaning: higher values of home affordability are less affordable than lower values of home affordability.  Perhaps a better term would be home inaffordability.   </p></section>
+  <section><p>This concentration curve appears less concentrated than population and estimated house price, yet more concentrated than median income and mean income. [...] Perhaps a better term would be home inaffordability.</p></section>
   <section><img src="output/plots/home_affordability_3.png" alt="Home Affordability Plot 3" /></section>
-  <section><p>A very small percentage of counties have a home affordability greater than 15 as evidenced by the near vanishing size of the blue region.  Even home affordability from 7 to 15 constitutes less than 4% of counties.  4 to 7 as well as <2 appear to contain about 15% to 20% of the population each.  Between 2 to 4 is very prevalent with over 60%of observations existing in this range.</p></section>
+  <section><p>A very small percentage of counties have a home affordability greater than 15 as evidenced by the near vanishing size of the blue region. [...] Between 2 to 4 is very prevalent with over 60% of observations existing in this range.</p></section>
   <section><img src="output/plots/home_affordability_4.png" alt="Home Affordability Plot 4" /></section>
-  <section><p>As expected, the majority of counties are in the orange category of between 2 to 4 for home affordability.  Some areas in the middle of the country are below 2.  Pockets of the east in New England, the Midatlantic and Florida have contiguous regions of the 4-7 red group.  Values greater than 15 are confined mostly to the counties directly on the west coast and specific hot real estate markets in Montana, Idaho, Utah, Colorado and Arizona.  </p></section>
+  <section><p>As expected, the majority of counties are in the orange category of between 2 to 4 for home affordability. [...] Values greater than 15 are confined mostly to the counties directly on the west coast and specific hot real estate markets in Montana, Idaho, Utah, Colorado and Arizona.</p></section>
   <section><img src="output/plots/home_affordability_5.png" alt="Home Affordability Plot 5" /></section>
-  <section><p>The distribution of home affordability values across US counties appears vaguely normal with a slight right skewed tail, similar yet not as pronounced as the distribution of estimated home price.  Considering the arithmetic definition of home affordability it makes a priori sense that it shares characteristics of the estimated house price and median income distributions.  4/5s of counties have a home affordability value between 2.1 and 5.4. The middle 50% of values exist between 2.6 and 4.1.  The right tail of the distributions starts to form after a peak at about 3, yet the decay of the tail is not monotonic, meaning it does not consistently drop as there is a bump around 5.5 before it decays further.  Around the value of 8, observations do not appear to become less frequent, but rather remain approximately stable until a value of 10.  </p></section>
+  <section><p>The distribution of home affordability values across US counties appears vaguely normal with a slight right skewed tail, similar yet not as pronounced as the distribution of estimated home price. [...] around the value of 10.</p></section>
   <section><img src="output/plots/home_affordability_6.png" alt="Home Affordability Plot 6" /></section>
-  <section><p>Here we can see once again that the majority of values are in the orange group of 2 to 4 for home affordability value.  Nearly the entire interval from the 10th percentile to the 75th is captured in the orange group.  Yellow and red cover the large left and right sides of the curve respectively with the high outliers above 7 covered by the purple group.  </p></section>
+  <section><p>Here we can see once again that the majority of values are in the orange group of 2 to 4 for home affordability value. [...] the high outliers above 7 covered by the purple group.</p></section>
 </main>
 </body>
 </html>
