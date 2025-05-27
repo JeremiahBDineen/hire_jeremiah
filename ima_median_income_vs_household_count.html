@@ -20,6 +20,10 @@
       margin: 0 auto;
     }
   </style>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
 <body>
 <header><nav><ul class="navbar">
@@ -82,9 +86,62 @@
   <section><img src="output/plots/ima/mi_hc/plot_11.png" alt="Plot 11" /></section>
   <section><img src="output/plots/ima/mi_hc/plot_12.png" alt="Plot 12" /></section>
 
-  <section><img src="output/plots/ima/mi_hc/plot_13.png" alt="Plot 13" /></section>
   <section><p>this is textbox #7 of mi_hc</p></section>
 
+  <section>
+    <h2>Explore Regression Output Table</h2>
+    <div style="overflow-x: auto; max-height: 500px;">
+      <table id="miHcTable" class="display" style="width:100%">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section><p>this is textbox #8 of mi_hc</p></section>
+
+  <section><img src="output/plots/ima/mi_hc/plot_13.png" alt="Plot 13" /></section>
+  <section><p>this is textbox #9 of mi_hc</p></section>
+
+  <script>
+    fetch('output/tables/ima/mi_hc.csv')
+      .then(response => response.text())
+      .then(csvText => {
+        const parsed = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true
+        });
+
+        const headers = parsed.meta.fields;
+        const rows = parsed.data;
+
+        const thead = document.querySelector('#miHcTable thead tr');
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          thead.appendChild(th);
+        });
+
+        const tbody = document.querySelector('#miHcTable tbody');
+        rows.forEach(row => {
+          const tr = document.createElement('tr');
+          headers.forEach(h => {
+            const td = document.createElement('td');
+            td.textContent = row[h];
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        new DataTable('#miHcTable', {
+          scrollY: '400px',
+          scrollCollapse: true,
+          paging: true,
+          pageLength: 25,
+          ordering: false
+        });
+      });
+  </script>
 </main>
 </body>
 </html>
