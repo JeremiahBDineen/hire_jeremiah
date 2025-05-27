@@ -66,7 +66,7 @@
   <section><img src="output/plots/ima/mi_hc/plot_1.png" alt="Plot 1" /></section>
   <section><img src="output/plots/ima/mi_hc/plot_2.png" alt="Plot 2" /></section>
 
-  <section><p>To start our analysis of the relationship between median income to household count per county, a good first step is to simply plot each observation as above.  As in the previously each observation is a county.  In the plots above every dot (observation) has a horizontal and vertical component which represents the household count and median income respectively.  As we would suspect, given the results of the previous univariate analysis most of the median income values are between 40K and 80K and most household counts are below 50K.   </p></section>
+  <section><p>To start our analysis of the relationship between median income to household count per county, a good first step is to simply plot each observation as above.  As previously each observation is a county.  In the plots above every dot (observation) has a horizontal and vertical component which represents the household count and median income respectively.  As we would suspect, given the results of the previous univariate analysis most of the median income values are between 40K and 80K and most household counts are below 50K.   </p></section>
   <section><img src="output/plots/ima/mi_hc/plot_3.png" alt="Plot 3" /></section>
   <section><img src="output/plots/ima/mi_hc/plot_4.png" alt="Plot 4" /></section>
 
@@ -98,10 +98,10 @@
     </div>
   </section>
 
-  <section><p> commentary on beta dist </p></section>
+  <section><p> Lower household count groups appear to have betas (slopes) that deviate from the general trend.  Most of the betas from groups of adequate sample size (>100) appear to be valued between 0.01 and 0.1.  The winsorized betas are quite larger than the rest with beta values between 0.125 and 0.139.  </p></section>
 
   <section><img src="output/plots/ima/mi_hc/plot_13.png" alt="Plot 13" /></section>
-  <section><p>The plot above is known as a bootstrap distribution or bootstrap simulation.  Using our 3,200 counties we: (1) randomly selected 50 counties (2) calculated the beta (or slope) of the regression for that data & (3) repeated the process 9,999 more times to create a distribution of betas.  80% of the observations have a beta between .023 and .204.  This means while there is no one true value of beta, the value can in general can be thought of as between the two values.  Remember the units of slope is based on median income by population.  Therefore, for every additional household there is in a county, the expected increase in median income is between $.02 and $.20.  In other words, every additional 1,000 households increases median income by $20 to $200.  
+  <section><p>The plot above is known as a bootstrap distribution or bootstrap simulation.  Using our 3,200 counties we: (1) randomly selected 50 counties (2) calculated the beta (or slope) of the regression for that data & (3) repeated the process 9,999 more times to create a distribution of betas.  80% of the observations have a beta between .023 and .204.  This means while there is no one true value of beta, the value in general can be thought of as between the two values.  Remember the units of slope is based on median income by population.  Therefore, for every additional household there is in a county, the expected increase in median income is between $.02 and $.20.  In other words, every additional 1,000 households increases median income by $20 to $200.  
 </p></section>
 
   <script>
