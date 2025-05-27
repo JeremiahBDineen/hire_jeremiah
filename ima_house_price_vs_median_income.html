@@ -62,31 +62,31 @@
 <main class="page-content">
   <h1>Association of House Price + Median Income</h1>
 
-  <section><p>this is textbox #1 of hp_mi</p></section>
+  <section><p>In this blog we’ll look into the relationship between median income and house price across each county of the US in 2023.  Various plot types and linear regression will be employed in an effort to infer qualities of the associative relationship.  A discussion on statistical inference is supplemented by a bootstrap simulation of the beta regression coefficient.  </p></section>
   <section><img src="output/plots/ima/hp_mi/plot_1.png" alt="Plot 1" /></section>
   <section><img src="output/plots/ima/hp_mi/plot_2.png" alt="Plot 2" /></section>
 
-  <section><p>this is textbox #2 of hp_mi</p></section>
+  <section><p>The plots above depict the empirical relationship between house price and median income per county.  It appears the highest concentrations of values form around (60K, 140K). Observations decrease the further you travel from this center point in an ovalish shape.  </p></section>
   <section><img src="output/plots/ima/hp_mi/plot_3.png" alt="Plot 3" /></section>
   <section><img src="output/plots/ima/hp_mi/plot_4.png" alt="Plot 4" /></section>
 
-  <section><p>this is textbox #3 of hp_mi</p></section>
+  <section><p>The comparison of the loess versus ols fit is quite interesting for this dataset.  From a median income of 50,000 and up, the two fits appear strikingly similar with loess fit having a slightly steeper slope.  The loess fit greatly differs from the ols fit for median income values below 50,000.  This is suggestive that the relationship between house price and median income is not purely linear, the relationship between the two variables differs greatly when splitting the median income above and below the threshold of 50,000.</p></section>
   <section><img src="output/plots/ima/hp_mi/plot_5.png" alt="Plot 5" /></section>
   <section><img src="output/plots/ima/hp_mi/plot_6.png" alt="Plot 6" /></section>
 
-  <section><p>this is textbox #4 of hp_mi</p></section>
+  <section><p>In this case the winsorization plot looks fairly similar to the original plots.  </p></section>
   <section><img src="output/plots/ima/hp_mi/plot_7.png" alt="Plot 7" /></section>
   <section><img src="output/plots/ima/hp_mi/plot_8.png" alt="Plot 8" /></section>
 
-  <section><p>this is textbox #5 of hp_mi</p></section>
+  <section><p>The loess fit almost appears as two piecewise lines with a shallower slope before 65,000 median income and a steeper slope after 65,000.  The ols fit splits the difference with a slope between the two loess slopes.  </p></section>
   <section><img src="output/plots/ima/hp_mi/plot_9.png" alt="Plot 9" /></section>
   <section><img src="output/plots/ima/hp_mi/plot_10.png" alt="Plot 10" /></section>
 
-  <section><p>this is textbox #6 of hp_mi</p></section>
+  <section><p>Once again, the data is unbalanced in the sense that just a few groups have most of the observations, while some groups have nearly zero observations.  </p></section>
   <section><img src="output/plots/ima/hp_mi/plot_11.png" alt="Plot 11" /></section>
   <section><img src="output/plots/ima/hp_mi/plot_12.png" alt="Plot 12" /></section>
 
-  <section><p>this is textbox #7 of hp_mi</p></section>
+  <section><p>While there are exceptions (median income >75K, house price > 175K), the trend across groups is a moderately positive slope.  </p></section>
 
   <section>
     <h2>Explore Regression Output Table</h2>
@@ -98,10 +98,10 @@
     </div>
   </section>
 
-  <section><p>this is textbox #8 of hp_mi</p></section>
+  <section><p> insert beta commentary </p></section>
 
   <section><img src="output/plots/ima/hp_mi/plot_13.png" alt="Plot 13" /></section>
-  <section><p>this is textbox #9 of hp_mi</p></section>
+  <section><p>The bootstrap simulation provides greater context on the potential beta values that the dataset can result in.  Based upon 10,000 simulations, 80% of the time the beta value is in between 4.36 and 8.79.  The units of the analysis both dollars: house price and median income.  Therefore the interpretation of the beta value is that for every additional $1,000 dollars of median income, the county is expected to have the typical house price to be $4,360 to $8,790 more expensive.  </p></section>
 
   <script>
     fetch('output/tables/ima/hp_mi.csv')
