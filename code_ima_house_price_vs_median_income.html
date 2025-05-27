@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>code_ima_house_price_vs_median_income</title><link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <style>
+    pre {
+      background-color: #f4f4f4;
+      padding: 1em;
+      border-radius: 6px;
+      overflow-x: auto;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <nav>
+    <ul class="navbar">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About Me</a></li>
+      <li class="dropdown"><a href="eua_population.html" class="dropbtn">Exploratory Univariate Analysis</a>
+        <div class="dropdown-content">
+          <a href="eua_population.html">Population</a>
+          <a href="eua_median_income.html">Median Income</a>
+          <a href="eua_mean_income.html">Mean Income</a>
+          <a href="eua_house_price.html">House Price</a>
+          <a href="eua_home_affordability.html">Home Affordability</a>
+        </div>
+      </li>
+      <li class="dropdown"><a href="ima_median_income_vs_household_count.html" class="dropbtn">Inferential Multivariate Analysis</a>
+        <div class="dropdown-content">
+          <a href="ima_median_income_vs_household_count.html">association - median income + household count</a>
+          <a href="ima_house_price_vs_median_income.html">association - house price + median income</a>
+        </div>
+      </li>
+      <li class="dropdown"><a href="code_us_county_data.html" class="dropbtn">Code</a>
+        <div class="dropdown-content">
+          <a href="code_us_county_data.html">us_county_data</a>
+          <a href="code_tigris_data.html">tigris_data</a>
+          <a href="code_eua_population.html">eua_population</a>
+          <a href="code_eua_median_income.html">eua_median_income</a>
+          <a href="code_eua_mean_income.html">eua_mean_income</a>
+          <a href="code_eua_house_price.html">eua_house_price</a>
+          <a href="code_eua_home_affordability.html">eua_home_affordability</a>
+          <a href="code_ima_median_income_vs_household_count.html">ima_median_income_vs_household_count</a>
+          <a href="code_ima_house_price_vs_median_income.html">ima_house_price_vs_median_income</a>
+        </div>
+      </li>
+      <li><a href="cv.html">CV</a></li>
+    </ul>
+  </nav>
+</header>
+<main class="page-content">
+  <h1>code_ima_house_price_vs_median_income</h1>
+  <pre><code class="language-r">
+
+library(tidyverse)
+library(sf)
+library(forcats)
+library(purrr)
+
+# data
+county_data=
+  readRDS('~/prgm/r/data/us_county.rds') %>%
+  filter(cohort=='household', data_year=='2023') %>%
+  mutate(
+    house_price_group= factor(case_when(
+      estimated_house_price > 500e3 ~ '> 500K',
+      estimated_house_price >  250e3 ~ '> 250K',
+      estimated_house_price >  175e3 ~ '>  175K',
+      estimated_house_price >  125e3 ~ '>  125K',
+      estimated_house_price <= 125e3 ~ '<= 125K',
+      .default= NA),
+      ordered=T,
+      levels= c('> 500K', '> 250K', '>  175K', '>  125K', '<= 125K')),
+    median_income_group= factor(case_when(
+      median_income > 125e3 ~ '> 125K',
+      median_income >  100e3 ~ '> 100K',
+      median_income >  75e3 ~ '>  75K',
+      median_income >  50e3 ~ '>  50K',
+      median_income <= 50e3 ~ '<= 50K',
+      .default= NA),
+      ordered=T,
+      levels= c('> 125K', '> 100K', '>  75K', '>  50K','<= 50K')),
+    house_price_group= fct_rev(house_price_group),
+    median_income_group= fct_rev(median_income_group)
+  ) %>%
+  filter(!is.na(house_price_group), !is.na(median_income_group)) %>%
+  rename(house_price= estimated_house_price)
+
+# standard    
+ggplot(county_data, aes(x= median_income, y= house_price)) +
+  geom_density_2d() +
+  geom_point(alpha=.2) +
+  theme_minimal() +
+  ggtitle('house price vs. median income - bivariate distribution') +
+  coord_cartesian(xlim = c(0, 180e3), ylim = c(0, 1e6))
+ggsave("output/plots/ima/hp_mi/plot_1.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(county_data, aes(x= median_income, y= house_price)) +
+  geom_density_2d_filled() +  
+  geom_point(alpha=.2) +
+  theme_minimal() +
+  ggtitle('house price vs. median income - heat map') +
+  coord_cartesian(xlim = c(0, 180e3), ylim = c(0, 1e6))
+ggsave("output/plots/ima/hp_mi/plot_2.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(county_data, aes(x= median_income, y= house_price)) +
+  geom_point(alpha = 0.2) +                       
+  geom_smooth(method = "loess", se= T) +         
+  theme_minimal() +
+  ggtitle('house price vs. median income - loess fit') +
+  coord_cartesian(xlim = c(0, 180e3), ylim = c(0, 1e6))
+ggsave("output/plots/ima/hp_mi/plot_3.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(county_data, aes(x= median_income, y= house_price)) +
+  geom_point(alpha = 0.2) +                       
+  geom_smooth(method = "lm", se= T) +         
+  theme_minimal() +
+  ggtitle('house price vs. median income - ols fit') +
+  coord_cartesian(xlim = c(0, 180e3), ylim = c(0, 1e6))
+ggsave("output/plots/ima/hp_mi/plot_4.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+# winsor10  
+ggplot(
+  county_data %>%
+    filter(
+      house_price < quantile(house_price, .95),
+      house_price > quantile(house_price, .05),
+      median_income < quantile(median_income, .95),
+      median_income > quantile(median_income, .05)),
+  aes(x= median_income, y= house_price)) +
+  geom_density_2d() +
+  geom_point(alpha=.2) +
+  theme_minimal() +
+  ggtitle('winsor10 house price vs. median income - bivariate distribution') +
+  coord_cartesian(xlim = c(0, 180e3), ylim = c(0, 1e6))
+ggsave("output/plots/ima/hp_mi/plot_5.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(
+  county_data %>%
+    filter(
+      house_price < quantile(house_price, .95),
+      house_price > quantile(house_price, .05),
+      median_income < quantile(median_income, .95),
+      median_income > quantile(median_income, .05)),
+  aes(x= median_income, y= house_price)) +
+  geom_density_2d_filled() +  
+  geom_point(alpha=.2) +
+  theme_minimal() +
+  ggtitle('winsor10 house price vs. median income - heat map') +
+  coord_cartesian(xlim = c(0, 180e3), ylim = c(0, 1e6))
+ggsave("output/plots/ima/hp_mi/plot_6.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(
+  county_data %>%
+    filter(
+      house_price < quantile(house_price, .95),
+      house_price > quantile(house_price, .05),
+      median_income < quantile(median_income, .95),
+      median_income > quantile(median_income, .05)),
+  aes(x= median_income, y= house_price)) +
+  geom_point(alpha = 0.2) +                       
+  geom_smooth(method = "loess", se= T) +         
+  theme_minimal() +
+  ggtitle('winsor10 house price vs. median income - loess fit') +
+  coord_cartesian(xlim = c(0, 180e3), ylim = c(0, 1e6))
+ggsave("output/plots/ima/hp_mi/plot_7.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(
+  county_data %>%
+    filter(
+      house_price < quantile(house_price, .95),
+      house_price > quantile(house_price, .05),
+      median_income < quantile(median_income, .95),
+      median_income > quantile(median_income, .05)),
+  aes(x= median_income, y= house_price)) +
+  geom_point(alpha = 0.2) +                       
+  geom_smooth(method = "lm", se= T) +         
+  theme_minimal() +
+  ggtitle('winsor10 house price vs. median income - ols fit') +
+  coord_cartesian(xlim = c(0, 180e3), ylim = c(0, 1e6))
+ggsave("output/plots/ima/hp_mi/plot_8.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+# bivariate partitioning analysis 
+ggplot(county_data, aes(x= median_income, y= house_price)) +
+  facet_grid(house_price_group ~ median_income_group, scales = "free") +
+  geom_density_2d() +  
+  geom_point(alpha=.2) +
+  theme_minimal() +
+  ggtitle('bivariate partitioning analysis - house price vs. median income - bivariate distribution')
+ggsave("output/plots/ima/hp_mi/plot_9.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(county_data, aes(x= median_income, y= house_price)) +
+  facet_grid(house_price_group ~ median_income_group, scales = "free") +
+  geom_density_2d_filled() + 
+  geom_point(alpha=.2) +
+  theme_minimal() +
+  ggtitle('bivariate partitioning analysis - house price vs. median income - heat map')
+ggsave("output/plots/ima/hp_mi/plot_10.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(county_data, aes(x= median_income, y= house_price)) +
+  facet_grid(house_price_group ~ median_income_group, scales = "free") +
+  geom_point(alpha = 0.2) +                       
+  geom_smooth(method = "loess", se= T) +         
+  theme_minimal() +
+  ggtitle('bivariate partitioning analysis - house price vs. median income - loess fit')
+ggsave("output/plots/ima/hp_mi/plot_11.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+ggplot(county_data, aes(x= median_income, y= house_price)) +
+  facet_grid(house_price_group ~ median_income_group, scales = "free") +
+  geom_point(alpha = 0.2) +                       
+  geom_smooth(method = "lm", se= T) +         
+  theme_minimal() +
+  ggtitle('bivariate partitioning analysis - house price vs. median income - ols fit')
+ggsave("output/plots/ima/hp_mi/plot_12.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+# bpa regression
+regression_summary=
+  county_data %>%
+  group_by(median_income_group, house_price_group) %>%
+  summarize(
+    count= n(),
+    intercept= if (count > 1) coef(lm(house_price ~median_income))[1] else NA_real_,
+    slope= if (count > 1) coef(lm(house_price ~median_income))[2] else NA_real_,
+    r_squared= if (count > 1) summary(lm(house_price ~median_income))$r.squared else NA_real_,
+    t_stat= if (count > 1) summary(lm(house_price ~median_income))$coefficients[2, "t value"] else NA_real_,
+    p_value= if (count > 1) summary(lm(house_price ~median_income))$coefficients[2, "Pr(>|t|)"] else NA_real_,
+    run= 'bivariate partition',
+    .groups= "drop"
+  ) %>%
+  bind_rows(
+    county_data %>%
+      summarize(
+        count= n(),
+        intercept= if (count > 1) coef(lm(house_price ~median_income))[1] else NA_real_,
+        slope= if (count > 1) coef(lm(house_price ~median_income))[2] else NA_real_,
+        r_squared= if (count > 1) summary(lm(house_price ~median_income))$r.squared else NA_real_,
+        t_stat= if (count > 1) summary(lm(house_price ~median_income))$coefficients[2, "t value"] else NA_real_,
+        p_value= if (count > 1) summary(lm(house_price ~median_income))$coefficients[2, "Pr(>|t|)"] else NA_real_,
+        run= 'global'
+      )
+  ) %>%
+  bind_rows(
+    county_data %>%
+      filter(
+        house_price < quantile(house_price, .975),
+        house_price > quantile(house_price, .025),
+        median_income < quantile(median_income, .975),
+        median_income > quantile(median_income, .025)
+      ) %>%
+      summarize(
+        count= n(),
+        intercept= if (count > 1) coef(lm(house_price ~median_income))[1] else NA_real_,
+        slope= if (count > 1) coef(lm(house_price ~median_income))[2] else NA_real_,
+        r_squared= if (count > 1) summary(lm(house_price ~median_income))$r.squared else NA_real_,
+        t_stat= if (count > 1) summary(lm(house_price ~median_income))$coefficients[2, "t value"] else NA_real_,
+        p_value= if (count > 1) summary(lm(house_price ~median_income))$coefficients[2, "Pr(>|t|)"] else NA_real_,
+        run= 'winsor_05'
+      )
+  ) %>%  bind_rows(
+    county_data %>%
+      filter(
+        house_price < quantile(house_price, .95),
+        house_price > quantile(house_price, .05),
+        median_income < quantile(median_income, .95),
+        median_income > quantile(median_income, .05)
+      ) %>%
+      summarize(
+        count= n(),
+        intercept= if (count > 1) coef(lm(house_price ~median_income))[1] else NA_real_,
+        slope= if (count > 1) coef(lm(house_price ~median_income))[2] else NA_real_,
+        r_squared= if (count > 1) summary(lm(house_price ~median_income))$r.squared else NA_real_,
+        t_stat= if (count > 1) summary(lm(house_price ~median_income))$coefficients[2, "t value"] else NA_real_,
+        p_value= if (count > 1) summary(lm(house_price ~median_income))$coefficients[2, "Pr(>|t|)"] else NA_real_,
+        run= 'winsor_10'
+      )
+  ) %>%
+  bind_rows(
+    county_data %>%
+      filter(
+        household_count < quantile(household_count, .9),
+        household_count > quantile(household_count, .1),
+        median_income < quantile(median_income, .9),
+        median_income > quantile(median_income, .1)
+      ) %>%
+      summarize(
+        count= n(),
+        intercept= if (count > 1) coef(lm(house_price ~median_income))[1] else NA_real_,
+        slope= if (count > 1) coef(lm(house_price ~median_income))[2] else NA_real_,
+        r_squared= if (count > 1) summary(lm(house_price ~median_income))$r.squared else NA_real_,
+        t_stat= if (count > 1) summary(lm(house_price ~median_income))$coefficients[2, "t value"] else NA_real_,
+        p_value= if (count > 1) summary(lm(house_price ~median_income))$coefficients[2, "Pr(>|t|)"] else NA_real_,
+        run= 'winsor_20'
+      )
+  ) %>%
+  select(run, slope, median_income_group, house_price_group, count, intercept, r_squared, t_stat, p_value)
+
+write.csv(
+  regression_summary %>%
+    mutate(
+      slope= round(slope, 3),
+      intercept= round(intercept, 1),
+      r_squared= paste0(round(100*r_squared, 1), '%'),
+      t_stat= round(t_stat, 1),
+      p_value= paste0(round(100*p_value, 3), '%')),
+  'output/tables/ima/hp_mi.csv',
+  row.names= F)
+
+# beta bootstrap
+set.seed(1123)
+
+bootstrap_beta=
+  data.frame(beta=
+               map_dbl(1:10e3,
+                       ~ {sample_df= sample_n(county_data, size= 50, replace= T)
+                       coef(lm(house_price ~ median_income, data= sample_df))[2]
+                       })
+  )
+
+ggplot(bootstrap_beta, aes(x= beta)) +
+  geom_density(alpha = 0.1, fill= 'red') +
+  geom_vline(
+    data= bootstrap_beta %>% reframe(value= quantile(beta, c(.1, .25, .75, .9), na.rm=T)) %>% mutate(percentile= c('10th', '25th', '75th', '90th')),
+    aes(xintercept= value, color= percentile),
+    linetype= "dashed",
+    linewidth= 0.8
+  ) +
+  geom_text(
+    data= bootstrap_beta %>% reframe(value= quantile(beta, c(.1, .25, .75, .9), na.rm=T)) %>% mutate(percentile= c('10th', '25th', '75th', '90th')),
+    aes(x= value, y= 0, label= round(value, 2)),
+    vjust= 1.5,
+    size= 3
+  ) +
+  scale_color_manual(values = c('darkgray', 'darkgray', 'darkgray', 'darkgray')) +
+  theme_minimal() +
+  labs(
+    title= 'bootstrap simulation - betas from house price ~ median income ',
+    x= "beta value",
+    y= "density"
+  )
+ggsave("output/plots/ima/hp_mi/plot_13.png", width= 11.46, height= 6.45, dpi= 200, units= "in")
+
+    
+  </code></pre>
+</main>
+</body>
+</html>
