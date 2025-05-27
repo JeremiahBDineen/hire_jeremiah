@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Association of House Price + Median Income</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    section {
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    section img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+<header><nav><ul class="navbar">
+  <li><a href="index.html">Home</a></li>
+  <li><a href="about.html">About Me</a></li>
+  <li class="dropdown"><a href="eua_population.html" class="dropbtn">Exploratory Univariate Analysis</a>
+    <div class="dropdown-content">
+      <a href="eua_population.html">Population</a>
+      <a href="eua_median_income.html">Median Income</a>
+      <a href="eua_mean_income.html">Mean Income</a>
+      <a href="eua_house_price.html">House Price</a>
+      <a href="eua_home_affordability.html">Home Affordability</a>
+    </div></li>
+  <li class="dropdown"><a href="ima_median_income_vs_household_count.html" class="dropbtn">Inferential Multivariate Analysis</a>
+    <div class="dropdown-content">
+      <a href="ima_median_income_vs_household_count.html">association - median income + household count</a>
+      <a href="ima_house_price_vs_median_income.html">association - house price + median income</a>
+    </div></li>
+  <li class="dropdown"><a href="code_us_county_data.html" class="dropbtn">Code</a>
+    <div class="dropdown-content">
+      <a href="code_us_county_data.html">us_county_data</a>
+      <a href="code_tigris_data.html">tigris_data</a>
+      <a href="code_eua_population.html">eua_population</a>
+      <a href="code_eua_median_income.html">eua_median_income</a>
+      <a href="code_eua_mean_income.html">eua_mean_income</a>
+      <a href="code_eua_house_price.html">eua_house_price</a>
+      <a href="code_eua_home_affordability.html">eua_home_affordability</a>
+      <a href="code_ima_topic1.html">ima_topic1</a>
+      <a href="code_ima_topic2.html">ima_topic2</a>
+      <a href="code_ima_topic3.html">ima_topic3</a>
+      <a href="code_ima_topic4.html">ima_topic4</a>
+      <a href="code_ima_topic5.html">ima_topic5</a>
+    </div></li>
+  <li><a href="cv.html">CV</a></li>
+</ul></nav></header>
+<main class="page-content">
+  <h1>Association of House Price + Median Income</h1>
+
+  <section><p>this is textbox #1 of hp_mi</p></section>
+  <section><img src="output/plots/ima/hp_mi/plot_1.png" alt="Plot 1" /></section>
+  <section><img src="output/plots/ima/hp_mi/plot_2.png" alt="Plot 2" /></section>
+
+  <section><p>this is textbox #2 of hp_mi</p></section>
+  <section><img src="output/plots/ima/hp_mi/plot_3.png" alt="Plot 3" /></section>
+  <section><img src="output/plots/ima/hp_mi/plot_4.png" alt="Plot 4" /></section>
+
+  <section><p>this is textbox #3 of hp_mi</p></section>
+  <section><img src="output/plots/ima/hp_mi/plot_5.png" alt="Plot 5" /></section>
+  <section><img src="output/plots/ima/hp_mi/plot_6.png" alt="Plot 6" /></section>
+
+  <section><p>this is textbox #4 of hp_mi</p></section>
+  <section><img src="output/plots/ima/hp_mi/plot_7.png" alt="Plot 7" /></section>
+  <section><img src="output/plots/ima/hp_mi/plot_8.png" alt="Plot 8" /></section>
+
+  <section><p>this is textbox #5 of hp_mi</p></section>
+  <section><img src="output/plots/ima/hp_mi/plot_9.png" alt="Plot 9" /></section>
+  <section><img src="output/plots/ima/hp_mi/plot_10.png" alt="Plot 10" /></section>
+
+  <section><p>this is textbox #6 of hp_mi</p></section>
+  <section><img src="output/plots/ima/hp_mi/plot_11.png" alt="Plot 11" /></section>
+  <section><img src="output/plots/ima/hp_mi/plot_12.png" alt="Plot 12" /></section>
+
+  <section><p>this is textbox #7 of hp_mi</p></section>
+
+  <section>
+    <h2>Explore Regression Output Table</h2>
+    <div style="overflow-x: auto; max-height: 500px;">
+      <table id="hpMiTable" class="display" style="width:100%">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section><p>this is textbox #8 of hp_mi</p></section>
+
+  <section><img src="output/plots/ima/hp_mi/plot_13.png" alt="Plot 13" /></section>
+  <section><p>this is textbox #9 of hp_mi</p></section>
+
+  <script>
+    fetch('output/tables/ima/hp_mi.csv')
+      .then(response => response.text())
+      .then(csvText => {
+        const parsed = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true
+        });
+
+        const headers = parsed.meta.fields;
+        const rows = parsed.data;
+
+        const thead = document.querySelector('#hpMiTable thead tr');
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          thead.appendChild(th);
+        });
+
+        const tbody = document.querySelector('#hpMiTable tbody');
+        rows.forEach(row => {
+          const tr = document.createElement('tr');
+          headers.forEach(h => {
+            const td = document.createElement('td');
+            td.textContent = row[h];
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        new DataTable('#hpMiTable', {
+          scrollY: '400px',
+          scrollCollapse: true,
+          paging: true,
+          pageLength: 25,
+          ordering: false
+        });
+      });
+  </script>
+</main>
+</body>
+</html>
