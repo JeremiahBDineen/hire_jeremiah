@@ -62,31 +62,31 @@
 <main class="page-content">
   <h1>Association of Median Income + Household Count</h1>
 
-  <section><p>this is textbox #1 of mi_hc</p></section>
+  <section><p>In this blog we’ll look into the relationship between household count and median income across each county of the US in 2023.  Various plot types and linear regression will be employed in an effort to infer qualities of the associative relationship.  A discussion on statistical inference is supplemented by a bootstrap simulation of the beta regression coefficient.  </p></section>
   <section><img src="output/plots/ima/mi_hc/plot_1.png" alt="Plot 1" /></section>
   <section><img src="output/plots/ima/mi_hc/plot_2.png" alt="Plot 2" /></section>
 
-  <section><p>this is textbox #2 of mi_hc</p></section>
+  <section><p>To start our analysis of the relationship between median income to household count per county, a good first step is to simply plot each observation as above.  As in the previously each observation is a county.  In the plots above every dot (observation) has a horizontal and vertical component which represents the household count and median income respectively.  As we would suspect, given the results of the previous univariate analysis most of the median income values are between 40K and 80K and most household counts are below 50K.   </p></section>
   <section><img src="output/plots/ima/mi_hc/plot_3.png" alt="Plot 3" /></section>
   <section><img src="output/plots/ima/mi_hc/plot_4.png" alt="Plot 4" /></section>
 
-  <section><p>this is textbox #3 of mi_hc</p></section>
+  <section><p>These two plots move beyond merely plotting the observations to attempting to establish an algebraic connection, namely a curve or line.  The loess fitted curve tries to provide a fitted median income value that is a function of household count.   One of the many points on the line is at (125K, 85K) suggesting the best guess for a county with 125,000 people would be a median income of 85,000.  The ols fitted curve is similar to the loess fitted curve with the exception that it is constrained to a linear form.  While the loess curve can exhibit varied behavior across the domain of household count, for the ols ‘linear’ form, the relationship between increasing household count to increasing median income must be determined by a single number.  This number is know as a ‘beta’ value.  Ols is an acronym for Ordinary Least Squares which is generally what people are referring to when they use the term regression.  </p></section>
   <section><img src="output/plots/ima/mi_hc/plot_5.png" alt="Plot 5" /></section>
   <section><img src="output/plots/ima/mi_hc/plot_6.png" alt="Plot 6" /></section>
 
-  <section><p>this is textbox #4 of mi_hc</p></section>
+  <section><p>In the context of regression and inferential analysis, sometimes a few outliers can have a disproportionate impact on the final values of interest, like the beta value.  One way to address this is called winsorization.  In the next few plots we can mirror the first four plots we did with a slight twist.  We’ll filter out the median income values below the 10th percentile and above the 90th percentile leaving the middle 80% of values.  We can do the same thing for the household count.  </p></section>
   <section><img src="output/plots/ima/mi_hc/plot_7.png" alt="Plot 7" /></section>
   <section><img src="output/plots/ima/mi_hc/plot_8.png" alt="Plot 8" /></section>
 
-  <section><p>this is textbox #5 of mi_hc</p></section>
+  <section><p>The loess curve between the standard and winsorized data is noticeably different.  Instead of curving upwards at higher household count, the winsorized loess curve seems to have an arch that may best be modelled by a parabolic regression form.  The winsor ols fit may be slightly less steep than the original ols.  </p></section>
   <section><img src="output/plots/ima/mi_hc/plot_9.png" alt="Plot 9" /></section>
   <section><img src="output/plots/ima/mi_hc/plot_10.png" alt="Plot 10" /></section>
 
-  <section><p>this is textbox #6 of mi_hc</p></section>
+  <section><p>Another strategy to understand the associative relationship between the two variables is called bivariate partitioning analysis.  Once again, we’ll repeat the same four plots as before, but with a different variation than before.  In the previous univariate analyses for median income and household count, we made a factor variable partition to bin each of the numeric value into several levels.  We can split the data into every unique combination of the levels from the two variable and repeat our regression analysis.  </p></section>
   <section><img src="output/plots/ima/mi_hc/plot_11.png" alt="Plot 11" /></section>
   <section><img src="output/plots/ima/mi_hc/plot_12.png" alt="Plot 12" /></section>
 
-  <section><p>this is textbox #7 of mi_hc</p></section>
+  <section><p>Many of the plots appear to have different slopes from earlier.  This reveals that the relationship between median income and household count does not truly appear to be a linear relationship.  To accurately model the median income of a county as a function of the household count, more exploration and model building is needed.  Another important implication of these plots are that the data is unbalanced.  Some groups have much fewer observations than others which poses severe constraints on the validity of any inferences drawn from these undersampled groups.</p></section>
 
   <section>
     <h2>Explore Regression Output Table</h2>
@@ -98,10 +98,11 @@
     </div>
   </section>
 
-  <section><p>this is textbox #8 of mi_hc</p></section>
+  <section><p> commentary on beta dist </p></section>
 
   <section><img src="output/plots/ima/mi_hc/plot_13.png" alt="Plot 13" /></section>
-  <section><p>this is textbox #9 of mi_hc</p></section>
+  <section><p>The plot above is known as a bootstrap distribution or bootstrap simulation.  Using our 3,200 counties we: (1) randomly selected 50 counties (2) calculated the beta (or slope) of the regression for that data & (3) repeated the process 9,999 more times to create a distribution of betas.  80% of the observations have a beta between .023 and .204.  This means while there is no one true value of beta, the value can in general can be thought of as between the two values.  Remember the units of slope is based on median income by population.  Therefore, for every additional household there is in a county, the expected increase in median income is between $.02 and $.20.  In other words, every additional 1,000 households increases median income by $20 to $200.  
+</p></section>
 
   <script>
     fetch('output/tables/ima/mi_hc.csv')
