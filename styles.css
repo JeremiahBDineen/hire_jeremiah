@@ -59,29 +59,15 @@ header {
   display: block;
 }
 
-/* Original constrained content area */
+/* Main content width */
 .page-content {
   padding: 40px;
   max-width: 800px;
   margin: auto;
 }
 
-/* ✅ New: allows full-width content for Tableau maps */
+/* Optional: full-width override for Tableau pages */
 .page-content.full-width {
   max-width: none;
-}
-
-/* Center Tableau dashboard and prevent overflow */
-/* Center Tableau embed without forcing horizontal scrollbars */
-.tableauPlaceholder,
-.tableauPlaceholder > object {
-  width: 100vw;
-  height: 1000px;
-  margin: 0 auto;
-  display: block;
-  box-sizing: border-box;
-  overflow-x: hidden;
-  padding-left: max((100vw - 1517px) / 2, 0px);
-  padding-right: max((100vw - 1517px) / 2, 0px);
 }
 
