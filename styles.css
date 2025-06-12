@@ -72,12 +72,16 @@ header {
 }
 
 /* Center Tableau dashboard and prevent overflow */
+/* Center Tableau embed without forcing horizontal scrollbars */
 .tableauPlaceholder,
 .tableauPlaceholder > object {
-  width: 100%;
-  max-width: 1200px;
+  width: 100vw;
   height: 1000px;
   margin: 0 auto;
   display: block;
   box-sizing: border-box;
+  overflow-x: hidden;
+  padding-left: max((100vw - 1517px) / 2, 0px);
+  padding-right: max((100vw - 1517px) / 2, 0px);
 }
+
