@@ -4,9 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>US County Dashboard</title>
-
-  <!-- Link to your shared stylesheet -->
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+  </style>
 </head>
 <body>
 
@@ -30,10 +35,7 @@
           <a href="ima_house_price_vs_median_income.html">association - house price + median income</a>
         </div>
       </li>
-
-      <!-- New menu item -->
       <li><a href="tableau_map.html">Tableau Map</a></li>
-
       <li class="dropdown"><a href="code_us_county_data.html" class="dropbtn">Code</a>
         <div class="dropdown-content">
           <a href="code_us_county_data.html">us_county_data</a>
@@ -53,7 +55,7 @@
 </header>
 
 <main class="page-content full-width">
-  <h1 style="text-align: center;">Interactive US County Dashboard</h1>
+  <h1>Interactive US County Dashboard</h1>
 
   <div class="tableauPlaceholder" id="vizUSCounties">
     <noscript>
@@ -84,7 +86,7 @@
   <script type="text/javascript">
     var divElement = document.getElementById('vizUSCounties');
     var vizElement = divElement.getElementsByTagName('object')[0];
-    vizElement.style.width = '100%';
+    vizElement.style.width = '1517px';
     vizElement.style.height = '1000px';
     var scriptElement = document.createElement('script');
     scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
