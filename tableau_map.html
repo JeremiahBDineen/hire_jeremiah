@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US County Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header>
+    <nav>
+      <ul class="navbar">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Me</a></li>
+        <li class="dropdown">
+          <a href="eua_population.html" class="dropbtn">Exploratory Univariate Analysis</a>
+          <div class="dropdown-content">
+            <a href="eua_population.html">Population</a>
+            <a href="eua_median_income.html">Median Income</a>
+            <a href="eua_mean_income.html">Mean Income</a>
+            <a href="eua_house_price.html">House Price</a>
+            <a href="eua_home_affordability.html">Home Affordability</a>
+          </div>
+        </li>
+        <li class="dropdown">
+          <a href="ima_median_income_vs_household_count.html" class="dropbtn">Inferential Multivariate Analysis</a>
+          <div class="dropdown-content">
+            <a href="ima_median_income_vs_household_count.html">association - median income + household count</a>
+            <a href="ima_house_price_vs_median_income.html">association - house price + median income</a>
+          </div>
+        </li>
+
+        <!-- ✅ New Tableau Map Link -->
+        <li><a href="tableau_map.html">Tableau Map</a></li>
+
+        <li class="dropdown">
+          <a href="code_us_county_data.html" class="dropbtn">Code</a>
+          <div class="dropdown-content">
+            <a href="code_us_county_data.html">us_county_data</a>
+            <a href="code_tigris_data.html">tigris_data</a>
+            <a href="code_eua_population.html">eua_population</a>
+            <a href="code_eua_median_income.html">eua_median_income</a>
+            <a href="code_eua_mean_income.html">eua_mean_income</a>
+            <a href="code_eua_house_price.html">eua_house_price</a>
+            <a href="code_eua_home_affordability.html">eua_home_affordability</a>
+            <a href="code_ima_median_income_vs_household_count.html">ima_median_income_vs_household_count</a>
+            <a href="code_ima_house_price_vs_median_income.html">ima_house_price_vs_median_income</a>
+          </div>
+        </li>
+        <li><a href="cv.html">CV</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page-content">
+    <h1>Interactive US County Dashboard</h1>
+
+    <div class="tableauPlaceholder" id="vizUSCounties" style="width: 100%; height: 900px;">
+      <noscript>
+        <a href="https://public.tableau.com/views/USCounty_Demographics/Dashboard1">
+          <img alt="US County Dashboard" 
+               src="https://public.tableau.com/static/images/US/USCounty_Demographics/Dashboard1/1_rss.png" 
+               style="border: none" />
+        </a>
+      </noscript>
+      <object class="tableauViz" style="display: none;">
+        <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F" />
+        <param name="embed_code_version" value="3" />
+        <param name="site_root" value="" />
+        <param name="name" value="USCounty_Demographics/Dashboard1" />
+        <param name="tabs" value="no" />
+        <param name="toolbar" value="yes" />
+        <param name="static_image" value="https://public.tableau.com/static/images/US/USCounty_Demographics/Dashboard1/1.png" />
+        <param name="animate_transition" value="yes" />
+        <param name="display_static_image" value="yes" />
+        <param name="display_spinner" value="yes" />
+        <param name="display_overlay" value="yes" />
+        <param name="display_count" value="yes" />
+        <param name="language" value="en-US" />
+        <param name="filter" value="publish=yes" />
+      </object>
+    </div>
+
+    <script type="text/javascript">
+      var divElement = document.getElementById('vizUSCounties');
+      var vizElement = divElement.getElementsByTagName('object')[0];
+      if (divElement.offsetWidth > 800) {
+        vizElement.style.width = '100%';
+        vizElement.style.height = '900px';
+      } else if (divElement.offsetWidth > 500) {
+        vizElement.style.width = '100%';
+        vizElement.style.height = '900px';
+      } else {
+        vizElement.style.width = '100%';
+        vizElement.style.height = '1200px';
+      }
+      var scriptElement = document.createElement('script');
+      scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+      vizElement.parentNode.insertBefore(scriptElement, vizElement);
+    </script>
+  </main>
+
+</body>
+</html>
