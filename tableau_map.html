@@ -5,23 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>US County Dashboard</title>
 
-  <!-- Link to your external stylesheet -->
+  <!-- Your existing stylesheet -->
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- Inline style to prevent Tableau scrollbars without affecting layout -->
+  <!-- Scoped fixes to ensure Tableau embed fits without scrollbars -->
   <style>
-    html, body {
+    body {
       margin: 0;
       padding: 0;
       overflow-x: hidden;
     }
-    .tableauPlaceholder, .tableauViz {
-      width: 100% !important;
-      max-width: 100vw !important;
-      box-sizing: border-box;
-    }
+
     .page-content {
       overflow-x: hidden;
+    }
+
+    .tableauPlaceholder,
+    .tableauPlaceholder > object {
+      width: 100% !important;
+      max-width: 100vw !important;
+      height: 1000px !important;
+      box-sizing: border-box;
+      display: block;
+      overflow: visible;
     }
   </style>
 </head>
@@ -48,7 +54,7 @@
         </div>
       </li>
 
-      <!-- ✅ Newly added link -->
+      <!-- Newly added link -->
       <li><a href="tableau_map.html">Tableau Map</a></li>
 
       <li class="dropdown"><a href="code_us_county_data.html" class="dropbtn">Code</a>
@@ -72,7 +78,7 @@
 <main class="page-content">
   <h1>Interactive US County Dashboard</h1>
 
-  <div class="tableauPlaceholder" id="vizUSCounties" style="min-height: 1000px;">
+  <div class="tableauPlaceholder" id="vizUSCounties">
     <noscript>
       <a href="https://public.tableau.com/views/USCounty_Demographics/Dashboard1">
         <img alt="US County Dashboard"
@@ -80,7 +86,7 @@
              style="border: none; width: 100%;" />
       </a>
     </noscript>
-    <object class="tableauViz" style="display: block; height: 1000px;">
+    <object class="tableauViz">
       <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F" />
       <param name="embed_code_version" value="3" />
       <param name="site_root" value="" />
@@ -102,7 +108,7 @@
     var divElement = document.getElementById('vizUSCounties');
     var vizElement = divElement.getElementsByTagName('object')[0];
     vizElement.style.width = '100%';
-    vizElement.style.height = '1000px';  // Adjust height as needed
+    vizElement.style.height = '1000px'; // Adjust this value if needed
     var scriptElement = document.createElement('script');
     scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
     vizElement.parentNode.insertBefore(scriptElement, vizElement);
