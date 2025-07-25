@@ -55,150 +55,149 @@
   </nav></header>
 <main class="page-content">
   <h1>us_county_data</h1>
-  <pre><code class="language-r">
+  <pre><code class="language-python">
+import pandas as pd
+import geopandas as gpd
+import requests
+import re
+from pathlib import Path
 
-library(tidyverse)
-library(sf)
-library(tigris)
+DOWN_DIR = Path("/Users/jeremiah/prgm/r/us_county/data")
+UP_DIR = Path("/Users/jeremiah/prgm/py/us_county/data")
+TIGER_DIR = UP_DIR / "tiger"
+ACS_DIR = DOWN_DIR / "productDownload_2025-05-10T200912"
+ZILLOW_FILE = DOWN_DIR / "County_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv"
+YEARS = list(range(2010, 2024))
 
-# https://data.census.gov/table/ACSST5Y2023.S1901?q=income&g=010XX00US$0500000 S1901 
-# 2023 dollars
-# https://www.zillow.com/research/data/
-'Zillow Home Value Index (ZHVI): A measure of the typical home value and market changes across a given region and housing type. It reflects the typical value for homes in the 35th to 65th percentile range. Available as a smoothed, seasonally adjusted measure and as a raw measure.
+'''
+https://data.census.gov/table/ACSST5Y2023.S1901?q=income&g=010XX00US$0500000 S1901 
+2023 dollars
+https://www.zillow.com/research/data/
+
+Zillow Home Value Index (ZHVI): A measure of the typical home value and market changes across a given region and housing type. It reflects the typical value for homes in the 35th to 65th percentile range. Available as a smoothed, seasonally adjusted measure and as a raw measure.
 Zillow publishes top-tier ZHVI ($, typical value for homes within the 65th to 95th percentile range for a given region) and bottom-tier ZHVI ($, typical value for homes within the 5th to 35th percentile range for a given region).
 
 Zillow also publishes ZHVI for all single-family residences ($, typical value for all single-family homes in a given region), for condo/coops ($), for all homes with 1, 2, 3, 4 and 5+ bedrooms ($).
 
 Note: Starting with the January 2023 data release, and for all subsequent releases, the full ZHVI time series has been upgraded to harness the power of the neural Zestimate.
 
-More information about what ZHVI is and how it’s calculated is available on this overview page. Here’s a handy ZHVI User Guide for information about properly citing and making calculations with this metric.'
+More information about what ZHVI is and how it’s calculated is available on this overview page. Here’s a handy ZHVI User Guide for information about properly citing and making calculations with this metric.
+'''
 
-acs= 
-  bind_rows(
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2023.S1901-Data.csv") %>%
-      mutate(data_year= '2023') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2022.S1901-Data.csv") %>%
-      mutate(data_year= '2022') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2021.S1901-Data.csv") %>%
-      mutate(data_year= '2021') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2020.S1901-Data.csv") %>%
-      mutate(data_year= '2020') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2019.S1901-Data.csv") %>%
-      mutate(data_year= '2019') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2018.S1901-Data.csv") %>%
-      mutate(data_year= '2018') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2017.S1901-Data.csv") %>%
-      mutate(data_year= '2017') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2016.S1901-Data.csv") %>%
-      mutate(data_year= '2016') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2015.S1901-Data.csv") %>%
-      mutate(data_year= '2015') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2014.S1901-Data.csv") %>%
-      mutate(data_year= '2014') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2013.S1901-Data.csv") %>%
-      mutate(data_year= '2013') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2012.S1901-Data.csv") %>%
-      mutate(data_year= '2012') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2011.S1901-Data.csv") %>%
-      mutate(data_year= '2011') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-    
-    read.csv("data/productDownload_2025-05-10T200912/ACSST5Y2010.S1901-Data.csv") %>%
-      mutate(data_year= '2010') %>%
-      select(data_year, GEO_ID, NAME, S1901_C01_001E, S1901_C01_012E, S1901_C01_013E, S1901_C02_001E, S1901_C02_012E, S1901_C02_013E, S1901_C03_001E, S1901_C03_012E, S1901_C03_013E, S1901_C04_001E, S1901_C04_012E, S1901_C04_013E),
-  ) %>%
-  filter(GEO_ID!= 'Geography') %>%
-  pivot_longer(
-    cols = c(-data_year, -GEO_ID, -NAME),
-    names_to = c("cohort", ".value"),
-    names_pattern = "S1901_(C0\\d)_(\\d{3}E)"
-  ) %>%
-  rename(county= NAME, household_count= `001E`, median_income= `012E`, mean_income= `013E`) %>%
-  mutate(
-    cohort = case_when(
-      cohort == "C01" ~ "household",
-      cohort == "C02" ~ "family",
-      cohort == "C03" ~ "married_couple",
-      cohort == "C04" ~ "non_family",
-      .default= NA
-    ),
-    
-    GEOID= str_sub(GEO_ID, 10,14),
-    
-    state= str_extract(county, '(?<=,\\s).+$'),
-    
-    county = case_when(
-      str_detect(county, 'County')~ str_extract(county, "^[^,]+(?= County)"),
-      .default= str_extract(county, "^[^,]+")),
-    
-    household_count= case_when(
-      household_count %in% c('N', '-', '(X)', 'null') ~ as.numeric(NA),
-      .default= as.numeric(household_count)
-    ),
-    
-    median_income= case_when(
-      median_income %in% c('N', '-', '(X)', 'null') ~ as.numeric(NA),
-      .default= as.numeric(median_income)
-    ),
-    
-    mean_income= case_when(
-      mean_income %in% c('N', '-', '(X)', 'null') ~ as.numeric(NA),
-      .default= as.numeric(mean_income)
-    ),
-    date= ymd(paste0(data_year, '-01-01'))
-  ) %>%
-  select(data_year, cohort, county, state, household_count, median_income, mean_income, GEOID, date) 
-  
-house_price=
-  read.csv("data/County_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv") %>%
-  pivot_longer(cols= starts_with("X"), names_to= "date", values_to= "estimated_house_price") %>%
-  mutate(
-    date= ymd(str_replace(date, "X", "")) + days(1),
-    
-    StateCodeFIPS= str_pad(StateCodeFIPS, width = 2, pad = "0"),
-    
-    MunicipalCodeFIPS= str_pad(MunicipalCodeFIPS, width = 3, pad = "0"),
-    
-    GEOID= paste0(StateCodeFIPS, MunicipalCodeFIPS)
-  ) %>%
-  select(RegionName, State, Metro, date, estimated_house_price, GEOID)
+# ----------------------------------------------------------------------------
+tiger_frames = []
+for year in range(2013, 2024):
+    filename = f"tl_{year}_us_county.zip"
+    url = f"https://www2.census.gov/geo/tiger/TIGER{year}/COUNTY/{filename}"
+    local_path = TIGER_DIR / filename
 
-us_county= 
-  full_join(acs, house_price, by= c('GEOID'='GEOID', 'date'='date')) %>%
-  filter(!is.na(data_year)) %>%
-  full_join(readRDS('data/tigris_data.rds'), by= c('GEOID'='GEOID', 'data_year'='data_year')) %>%
-  select(cohort, data_year, date, GEOID, county, state, State, STUSPS, Metro, geometry, household_count, median_income, mean_income, estimated_house_price) %>%
-  mutate(
-    cohort= case_when(is.na(cohort)~ 'household', .default= cohort),
-    State= case_when(is.na(State)~ STUSPS, .default= State),
-    date= case_when(is.na(date)~ ymd(paste0(data_year, '-01-01')), .default= date)
+    if not local_path.exists():
+        print(f"Downloading {filename}...")
+        response = requests.get(url)
+        if response.ok and "zip" in response.headers.get("Content-Type", ""):
+            with open(local_path, "wb") as f:
+                f.write(response.content)
+            print(f"✅ Saved to: {local_path}")
+        else:
+            print(f"⚠️ Skipping {year} due to download issue.")
+            continue
+
+    try:
+        print(f"Reading shapefile for {year}...")
+        shapefile_path = f"zip://{local_path.resolve()}!tl_{year}_us_county.shp"
+        gdf = gpd.read_file(shapefile_path)
+        gdf["data_year"] = str(year)
+        tiger_frames.append(gdf[["GEOID", "data_year", "NAME", "STATEFP", "geometry"]])
+    except Exception as e:
+        print(f"⚠️ Failed to read {year}: {e}")
+
+tiger = pd.concat(tiger_frames, ignore_index=True)
+tiger["GEOID"] = tiger["GEOID"].str[-5:].str.zfill(5)
+
+# ----------------------------------------------------------------------------
+acs_frames = []
+for year in YEARS:
+    file = ACS_DIR / f"ACSST5Y{year}.S1901-Data.csv"
+    df = pd.read_csv(file, dtype=str)
+    df["data_year"] = str(year)
+    df = df[[
+        "data_year", "GEO_ID", "NAME",
+        "S1901_C01_001E", "S1901_C01_012E", "S1901_C01_013E",
+        "S1901_C02_001E", "S1901_C02_012E", "S1901_C02_013E",
+        "S1901_C03_001E", "S1901_C03_012E", "S1901_C03_013E",
+        "S1901_C04_001E", "S1901_C04_012E", "S1901_C04_013E"
+    ]]
+    acs_frames.append(df)
+acs = pd.concat(acs_frames, ignore_index=True)
+acs = acs[acs["GEO_ID"] != "Geography"]
+acs = acs.melt(
+    id_vars=["data_year", "GEO_ID", "NAME"],
+    var_name="var",
+    value_name="value"
+)
+acs[["cohort", "field"]] = acs["var"].str.extract(r"S1901_(C0\d)_(\d{3}E)")
+acs = acs.pivot_table(
+    index=["data_year", "GEO_ID", "NAME", "cohort"],
+    columns="field",
+    values="value",
+    aggfunc="first"
+).reset_index()
+acs.columns.name = None
+acs = acs.rename(columns={
+    "001E": "household_count",
+    "012E": "median_income",
+    "013E": "mean_income",
+    "NAME": "county"
+})
+acs["cohort"] = acs["cohort"].map({
+    "C01": "household",
+    "C02": "family",
+    "C03": "married_couple",
+    "C04": "non_family"
+})
+acs["GEOID"] = acs["GEO_ID"].str[-5:].str.zfill(5)
+acs["state"] = acs["county"].str.extract(r",\s*(.*)$")[0]
+acs["county"] = acs["county"].str.extract(r"^([^,]+?)(?: County)?(?:,|$)")[0]
+for col in ["household_count", "median_income", "mean_income"]:
+    acs[col] = pd.to_numeric(
+        acs[col].replace(['N', '-', '(X)', 'null'], pd.NA),
+        errors='coerce'
     )
+acs["date"] = acs["data_year"] + "-01-01"
 
-saveRDS(us_county, 'data/us_county.rds')
+# ----------------------------------------------------------------------------
+zillow = pd.read_csv(ZILLOW_FILE)
+date_columns = [col for col in zillow.columns if re.match(r"^\d{4}-\d{2}-\d{2}$", col)]
+zillow = zillow.melt(
+    id_vars=[col for col in zillow.columns if col not in date_columns],
+    value_vars=date_columns,
+    var_name="date",
+    value_name="estimated_house_price"
+)
+zillow["StateCodeFIPS"] = zillow["StateCodeFIPS"].astype(str).str.zfill(2)
+zillow["MunicipalCodeFIPS"] = zillow["MunicipalCodeFIPS"].astype(str).str.zfill(3)
+zillow["GEOID"] = (zillow["StateCodeFIPS"] + zillow["MunicipalCodeFIPS"]).str.zfill(5)
+zillow["date"] = pd.to_datetime(zillow["date"]).dt.date + pd.Timedelta(days=1)
+zillow["date"] = zillow["date"].astype(str)
+
+# ----------------------------------------------------------------------------
+data = pd.merge(acs, zillow, on=["GEOID", "date"], how="outer")
+data = data[data["data_year"].notna()]
+data["data_year"] = data["data_year"].fillna(data["date"].str[:4])
+data["date"] = data["date"].fillna(data["data_year"] + "-01-01")
+data = pd.merge(data, tiger, on=["GEOID", "data_year"], how="left")
+data["cohort"] = data["cohort"].fillna("household")
+data["State"] = data["State"].fillna(data.get("STUSPS", data.get("STATEFP")))
+data["data_year"] = data["data_year"].fillna(data["date"].str[:4])
+data["date"] = data["date"].fillna(data["data_year"] + "-01-01")
+
+# ----------------------------------------------------------------------------
+data_gdf = gpd.GeoDataFrame(data, geometry="geometry", crs="EPSG:4269")
+data_gdf.to_parquet(UP_DIR / "us_county.parquet", index=False)
+data_gdf.drop(columns="geometry").to_csv(UP_DIR / "us_county.csv", index=False)
+
+print(f"✅ Wrote {len(data_gdf):,} rows to us_county.parquet")
+
 
     
   </code></pre>
