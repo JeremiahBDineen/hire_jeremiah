@@ -80,7 +80,7 @@
 </nav></header>
 <main class="sec-project">
 <h1>Clean Financial Data for 1500 Public Companies</h1>
-<p><strong>A Python-powered pipeline to convert 15,000+ SEC filings into structured, analysis-ready tables — no vendor, no manual effort.</strong></p>
+<p><strong>A Python-powered pipeline to convert 15,000+ SEC filings into a single, unified, structured, analysis-ready table — no vendor, no manual effort.</strong></p>
 
 <h2>📈 Project Stats</h2>
 <ul>
@@ -108,12 +108,9 @@
 
 <h2>⚙️ How It Works</h2>
 <ol>
-  <li><strong>Collect Tickers + SEC Identifiers:</strong> Use Wikipedia to identify the full SP1500 universe, and join with the official CIK registry.
-  </li><br>
-  <li><strong>Query the SEC’s API:</strong> For each company, collect all filings (10-Ks, 10-Qs) using the SEC’s public JSON endpoint.
-  </li><br>
-  <li><strong>Flatten and Clean:</strong> Flatten nested JSON entries, standardize formats, and join into a single master dataset.
-  </li>
+  <li><strong>Collect Tickers + SEC Identifiers:</strong><br>Use Wikipedia to identify the full SP1500 universe, and join with the official CIK registry.</li><br>
+  <li><strong>Query the SEC’s API:</strong><br>For each company, collect all filings (10-Ks, 10-Qs) using the SEC’s public JSON endpoint.</li><br>
+  <li><strong>Flatten and Clean:</strong><br>Flatten nested JSON entries, standardize formats, and join into a single master dataset.</li>
 </ol>
 
 <h2>🛠️ Key Data Skills Demonstrated</h2>
@@ -122,12 +119,13 @@
   <li>Large-scale ingestion and parsing of deeply nested JSON structures (15,000+ filings)</li>
   <li>Data wrangling: subsetting, reshaping, binding, type coercion, joins, deduplication</li>
   <li>Standardizing metadata and temporal fields for downstream aggregation</li>
-  <li>Exporting to platform-independent file types (CSV, Parquet)</li>
+  <li>Reformatting, filtering, and validating missing or null entries</li>
+  <li>Multi-source joining and reconciliation of mismatched identifier fields</li>
+  <li>Writing intermediary modular artifacts and exporting platform-independent output (CSV, Parquet)</li>
 </ul>
 
 <h2>💻 Full Script (100 lines)</h2>
 <pre><code class="language-python">
-{{
 import pandas as pd
 import requests
 import time
@@ -228,7 +226,6 @@ us_gaap["filed"] = pd.to_datetime(us_gaap["filed"], errors="coerce")
 
 us_gaap.to_parquet("data/us_gaap.parquet", index=False)
 us_gaap.to_csv("data/us_gaap.csv", index=False)
-}}
 </code></pre>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
