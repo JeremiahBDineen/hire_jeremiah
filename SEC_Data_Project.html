@@ -96,6 +96,7 @@
 
 <h2>📊 Sample Output: Microsoft (MSFT), FY 2024</h2>
 <section>
+  <pre><code class="language-sql">SELECT * FROM sec_data_project WHERE ticker = 'msft' AND fy = '2024';</code></pre>
   <div style="overflow-x: auto; max-height: 500px;">
     <table id="populationTable" class="display" style="width:100%">
       <thead><tr></tr></thead>
@@ -130,11 +131,111 @@
   <li>Reformatting, filtering, and validating missing or null entries</li>
   <li>Multi-source joining and reconciliation of mismatched identifier fields</li>
   <li>Writing intermediary modular artifacts and exporting platform-independent output (CSV, Parquet)</li>
+  <li>Clean, succinct, modular code</li>
 </ul>
 
 <h2>💻 Full Script (100 lines)</h2>
 <pre><code class="language-python">
-{{PYTHON_SCRIPT_PLACEHOLDER}}
+import pandas as pd
+import requests
+import time
+import json
+
+sp500 = pd.read_html("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies")[0][["Symbol", "Security"]]
+sp400 = pd.read_html("https://en.wikipedia.org/wiki/List_of_S%26P_400_companies")[0][["Symbol", "Security"]]
+sp600 = pd.read_html("https://en.wikipedia.org/wiki/List_of_S%26P_600_companies")[0][["Symbol", "Company"]]
+sp600.columns = ["Symbol", "Security"]
+
+sp1500 = pd.concat([sp500, sp400, sp600], ignore_index=True)
+sp1500["ticker"] = sp1500["Symbol"].str.lower()
+sp1500 = sp1500[["ticker", "Security"]]
+sp1500.columns = ["ticker", "company"]
+
+cik = requests.get("https://www.sec.gov/include/ticker.txt", headers={"User-Agent": "jeremiahbdineen@gmail.com"}).text.strip().split("\n")
+cik = pd.DataFrame([line.split("\t") for line in cik], columns=["ticker", "cik"])
+cik["cik"] = cik["cik"].str.zfill(10)
+
+sp1500 = sp1500.merge(cik, on="ticker", how="left")
+sp1500 = sp1500[sp1500["cik"].notna()].copy()
+
+def fetch_company_facts(cik):
+    cik_padded = str(cik).zfill(10)
+    url = f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik_padded}.json"
+    headers = {"User-Agent": "jeremiahbdineen@gmail.com"}
+
+    try:
+        res = requests.get(url, headers=headers, timeout=10)
+        if res.status_code != 200:
+            return None
+        return res.json()
+    except Exception as e:
+        print(f"Error fetching {cik_padded}: {e}")
+        return None
+
+company_facts = []
+
+for i, row in sp1500.iterrows():
+    cik = row["cik"]
+    print(f"Fetching {row['ticker']} ({cik}) ... ", end="")
+    facts = fetch_company_facts(cik)
+    company_facts.append(facts)
+    print("✔" if facts else "✘")
+    time.sleep(3)  
+sp1500["company_facts"] = company_facts
+
+#save intermediary data structure (sp1500 df with json nested column)
+sp1500.to_pickle("data/sp1500.pkl")
+sp1500 = pd.read_pickle("data/sp1500.pkl")
+
+def extract_us_gaap_values(ticker, company_facts):
+    try:
+        us_gaap = company_facts["facts"]["us-gaap"]
+    except (KeyError, TypeError):
+        return pd.DataFrame()
+
+    rows = []
+
+    for measure, entry in us_gaap.items():
+        if "units" not in entry:
+            continue
+
+        for unit, values in entry["units"].items():
+            if not isinstance(values, list):
+                continue
+
+            for record in values:
+                if not all(k in record for k in ["val", "end", "fy", "fp", "filed", "accn", "form", "frame"]):
+                    continue
+
+                rows.append({
+                    "ticker": ticker,
+                    "measure": measure,
+                    "unit": unit,
+                    "val": record["val"],
+                    "end": record["end"],
+                    "fy": record["fy"],
+                    "fp": record["fp"],
+                    "filed": record["filed"],
+                    "accn": record["accn"],
+                    "form": record["form"],
+                    "frame": record["frame"]
+                })
+
+    return pd.DataFrame(rows)
+
+records = []
+
+for i, row in sp1500.iterrows():
+    extracted = extract_us_gaap_values(row["ticker"], row["company_facts"])
+    if not extracted.empty:
+        records.append(extracted)
+
+us_gaap = pd.concat(records, ignore_index=True)
+us_gaap["end"] = pd.to_datetime(us_gaap["end"], errors="coerce")
+us_gaap["filed"] = pd.to_datetime(us_gaap["filed"], errors="coerce")
+
+us_gaap.to_parquet("data/us_gaap.parquet", index=False)
+us_gaap.to_csv("data/us_gaap.csv", index=False)
 </code></pre>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
