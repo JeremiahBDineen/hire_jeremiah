@@ -162,7 +162,7 @@ sp1500 = sp1500[sp1500["cik"].notna()].copy()
 def fetch_company_facts(cik):
     cik_padded = str(cik).zfill(10)
     url = f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik_padded}.json"
-    headers = {"User-Agent": "jeremiahbdineen@gmail.com"}
+    headers = {"User-Agent": "your_email_address@gmail.com"}
 
     try:
         res = requests.get(url, headers=headers, timeout=10)
