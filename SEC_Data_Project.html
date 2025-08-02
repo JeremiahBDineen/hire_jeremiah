@@ -101,12 +101,13 @@
     <table id="populationTable" class="display" style="width:100%">
       <thead><tr></tr></thead>
       <style>
-  #populationTable th:nth-child(2) {
-    max-width: 75px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  #populationTable th:nth-child(2),
+#populationTable td:nth-child(2) {
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>
       <tbody></tbody>
     </table>
