@@ -96,10 +96,17 @@
 
 <h2>📊 Sample Output: Microsoft (MSFT), FY 2024</h2>
 <section>
-  <h2>Explore MSFT Table</h2>
   <div style="overflow-x: auto; max-height: 500px;">
     <table id="populationTable" class="display" style="width:100%">
       <thead><tr></tr></thead>
+      <style>
+  #populationTable th:nth-child(2) {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
       <tbody></tbody>
     </table>
   </div>
